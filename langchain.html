@@ -1,0 +1,433 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LangChain — Agentic AI Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F5F3; --card:#FFFFFF; --ink:#1A1712; --muted:#6B635A; --hair:#E8E4DE;
+  --accent:#E8710A; --accent-d:#C25E00; --accent-soft:#FFF2E4;
+  --teal:#0E9C8E; --coral:#E5484D; --green:#12924F; --violet:#7C4DDB; --blue:#2563EB;
+  --disp:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.62;font-size:15.5px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.top{position:sticky;top:0;z-index:20;background:rgba(246,245,243,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair);padding:12px 20px;display:flex;align-items:center;gap:14px}
+.top .home{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--muted)}
+.top .home:hover{color:var(--accent);text-decoration:none}
+.top .crumb{font-family:var(--disp);font-weight:600;font-size:15px}
+.shell{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:240px 1fr;gap:36px;padding:28px 20px 100px}
+.toc{position:sticky;top:70px;align-self:start;max-height:calc(100vh - 96px);overflow:auto;font-size:13px;padding-right:8px}
+.toc h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.toc a{display:block;color:var(--muted);padding:4px 10px;border-left:2px solid var(--hair);margin-left:2px;border-radius:0 6px 6px 0}
+.toc a:hover{color:var(--ink);background:var(--card);text-decoration:none}
+.content{min-width:0;max-width:820px}
+.doc-title{font-family:var(--disp);font-weight:700;font-size:clamp(28px,5vw,42px);letter-spacing:-.015em;margin:0 0 6px}
+h2.sec{font-family:var(--disp);font-weight:600;font-size:23px;margin:46px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--ink);scroll-margin-top:80px}
+h3.sub{font-family:var(--disp);font-weight:600;font-size:17.5px;margin:26px 0 8px}
+h4.sub4{font-family:var(--disp);font-weight:600;font-size:15px;margin:18px 0 6px;color:#33291f}
+p{margin:11px 0}
+p.estep{font-family:var(--disp);font-weight:600;font-size:15.5px;margin:18px 0 6px;color:var(--accent-d)}
+p.minilabel{font-family:var(--disp);font-weight:600;font-size:14px;margin:16px 0 4px;color:var(--ink);background:var(--accent-soft);display:inline-block;padding:3px 10px;border-radius:8px}
+ul,ol{margin:11px 0;padding-left:22px}li{margin:5px 0}
+ul.checklist{list-style:none;padding-left:4px}
+ul.checklist li{position:relative;padding-left:26px;margin:6px 0}
+ul.checklist li::before{position:absolute;left:0;top:0;font-weight:700}
+ul.checklist li.ok::before{content:"✓";color:var(--green)}
+ul.checklist li.no::before{content:"✕";color:var(--coral)}
+ul.checklist li.arw::before{content:"→";color:var(--accent)}
+hr{border:none;border-top:1px solid var(--hair);margin:26px 0}
+strong{font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:var(--accent-soft);color:var(--accent-d);padding:1px 6px;border-radius:5px}
+blockquote{margin:16px 0;padding:10px 16px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;color:#3a2f22}
+.tablewrap{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--hair);padding:8px 12px}
+th{background:var(--card);font-family:var(--disp);font-weight:600}
+tbody tr:nth-child(even){background:#FBFAF8}
+.fig{margin:18px 0;text-align:center}
+.fig img{max-width:100%;height:auto;border:1px solid var(--hair);border-radius:12px;background:#fff;padding:8px}
+.fig figcaption{font-size:12.5px;color:var(--muted);margin-top:8px;font-family:var(--mono)}
+.code{position:relative;margin:14px 0;border:1px solid var(--hair);border-radius:12px;overflow:hidden;background:#161a20}
+.code.inline{background:#20262f}
+.code.ascii{background:#1b2530}
+.code-tag{position:absolute;top:8px;right:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8891a8;z-index:2}
+.code pre{margin:0;padding:15px 18px;overflow-x:auto}
+.code code{background:none;color:#e7ebf1;padding:0;font-size:13px;line-height:1.6;display:block}
+.code .language-plaintext{color:#cfe0dc;white-space:pre}
+.hero-viz{margin:18px 0 28px;background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:22px;min-height:170px}
+.viz-cap{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.viz-cap .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.readout{font-family:var(--mono);font-size:14px;margin-top:16px;color:var(--ink);min-height:20px}
+.readout .hit{color:var(--green);font-weight:700}
+.readout .warn{color:var(--coral);font-weight:700}
+/* casting ladder */
+.ladder{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rung{padding:9px 12px;border-radius:10px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-weight:700;font-size:13px;transition:all .45s ease}
+.rung.on{border-color:var(--green);background:#ECFDF3;transform:translateY(-3px)}
+.rung.warnon{border-color:var(--coral);background:#FEF2F2}
+.arrw{color:var(--muted);font-family:var(--mono)}
+/* jvm pipeline */
+.pipe{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stage{padding:12px 14px;border-radius:12px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-size:12.5px;font-weight:600;text-align:center;min-width:92px;transition:all .4s ease}
+.stage.on{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-3px)}
+.stage.hot{border-color:var(--coral);background:#FEF2F2;color:var(--coral)}
+.stage small{display:block;font-weight:400;color:var(--muted);font-size:10.5px;margin-top:2px}
+.flowarr{color:var(--accent);font-size:18px}
+/* oop dispatch */
+.dispatch{display:flex;flex-direction:column;gap:14px}
+.drow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pill{padding:9px 13px;border-radius:10px;font-family:var(--mono);font-weight:700;font-size:13px;border:2px solid var(--hair);background:#fff;transition:all .45s}
+.pill.ref{border-color:var(--muted);color:var(--muted)}
+.pill.obj.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+.pill.impl{border-color:var(--hair);opacity:.5}
+.pill.impl.win{border-color:var(--green);background:#ECFDF3;color:var(--green);opacity:1;transform:translateY(-3px)}
+.pagefoot{max-width:820px;margin:40px auto 0;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.toc{display:none}}
+
+.cpanel{background:#161a20;border-radius:12px;padding:14px 16px;font-family:var(--mono);font-size:12.5px;color:#e7ebf1;line-height:1.65;transition:opacity .5s}
+.cpanel .kw{color:#C792EA}.cpanel .ty{color:#4FC1A6}.cpanel .mut{color:#8891a8}
+.twocol{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.twocol .cpanel{flex:1;min-width:230px}
+.earrow{font-size:24px;color:var(--accent)}
+.fade{opacity:.25}
+.rchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.rchip{padding:7px 11px;border-radius:9px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-size:12px;font-weight:600;opacity:0;transform:translateY(6px);transition:all .4s}
+.rchip.on{opacity:1;transform:none;border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+.rchip .v{color:var(--green);font-weight:700}
+.classbox{display:inline-block;padding:10px 16px;border-radius:10px;border:2px solid var(--accent);background:var(--accent-soft);font-family:var(--mono);font-weight:700;color:var(--accent-d);margin-bottom:12px}
+.retstrip{display:flex;gap:10px;flex-wrap:wrap}
+.retstage{flex:1;min-width:120px;border:2px solid var(--hair);border-radius:10px;padding:10px;text-align:center;background:#fff;transition:all .45s}
+.retstage .rt{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.retstage .rl{font-family:var(--disp);font-weight:600;font-size:14px;margin-top:3px}
+.retstage.on{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-3px)}
+.retstage.gone{opacity:.3}
+.retstage.keep{border-color:var(--green);background:#ECFDF3}
+.frames{display:flex;flex-direction:column;gap:7px;max-width:460px}
+.frm{padding:10px 14px;border-radius:10px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-size:13px;font-weight:600;display:flex;justify-content:space-between;align-items:center;transition:all .4s}
+.frm .q{font-size:11px;font-weight:400;color:var(--muted)}
+.frm.hasexc{border-color:var(--coral);background:#FEF2F2;color:var(--coral)}
+.frm.crash{border-color:var(--coral);background:var(--coral);color:#fff}
+.frm.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>window.addEventListener('DOMContentLoaded',function(){try{document.querySelectorAll('code.language-java,code.language-python,code.language-json,code.language-javascript,code.language-bash,code.language-yaml').forEach(function(b){hljs.highlightElement(b)});}catch(e){}});</script>
+</head><body>
+<div class="top"><a class="home" href="index.html">&larr; All topics</a><span class="crumb">04 · LangChain</span></div>
+<div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-what">Where LangChain fits: framework, runtime, harness</a><a href="#s-models">Chat models: one interface, many providers</a><a href="#s-lcel">Prompts, parsers and the | pipe (LCEL)</a><a href="#s-tools">Defining tools</a><a href="#s-create-agent">create_agent — the standard way to build an agent</a><a href="#s-structured">Structured output</a><a href="#s-middleware">Middleware — hooks into the loop</a><a href="#s-memory">Memory: threads and checkpointers</a><a href="#s-rag">Retrieval (RAG) in LangChain</a><a href="#s-migrate">Old LangChain → LangChain 1.0 cheat sheet</a><a href="#s-choose">LangChain vs LangGraph vs plain SDK — which to reach for?</a><a href="#s-check">Check yourself</a></nav><main class="content">
+<h1 class="doc-title">LangChain</h1>
+<div class="hero-viz" id="heroViz"></div>
+<p class="lede"><strong>LangChain</strong> is an open-source framework for building LLM applications and agents. It gives you a <em>standard interface</em> over hundreds of model providers and tools, plus <code>create_agent</code> — a few-line way to get a working tool-calling agent. Since the 1.0 release (October 2025) it is a much smaller, sharper library than the sprawling "chains for everything" framework many older tutorials describe.</p>
+<p>Topic 02 showed the raw mechanics; LangChain is what stops you rewriting them for every provider.</p>
+<blockquote>Heads-up: a lot of LangChain content online is from the pre-1.0 era (<code>LLMChain</code>, <code>initialize_agent</code>, <code>AgentExecutor</code>). That style is legacy — if a tutorial uses it, look for the 1.0 equivalent on this page. Verify exact signatures against <code>docs.langchain.com</code>, since the library keeps evolving.</blockquote>
+<hr>
+
+<h2 class="sec" id="s-what">Where LangChain fits: framework, runtime, harness</h2>
+<p>The LangChain ecosystem has several pieces and people mix them up constantly. The docs themselves describe a useful three-layer view:</p>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left">Layer</th><th style="text-align:left">Product</th><th style="text-align:left">What it gives you</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Framework</strong></td><td>LangChain</td><td>Model/tool abstractions, <code>create_agent</code>, middleware, integrations</td></tr>
+    <tr><td><strong>Runtime</strong></td><td>LangGraph</td><td>Durable execution, state, persistence, human-in-the-loop (Topic 05)</td></tr>
+    <tr><td><strong>Harness</strong></td><td>Deep Agents</td><td>Batteries-included agent: planning, filesystem, sub-agents, context management (Topic 06)</td></tr>
+    <tr><td><strong>Observability &amp; evals</strong></td><td>LangSmith</td><td>Tracing, datasets, evaluations, monitoring (Topics 07, 08)</td></tr>
+  </tbody>
+</table></div>
+<div class="pipe">
+  <span class="stage on">LangChain<small>build it fast</small></span><span class="flowarr">runs on →</span>
+  <span class="stage o">LangGraph<small>durable runtime</small></span><span class="flowarr">watched by →</span>
+  <span class="stage">LangSmith<small>traces &amp; evals</small></span>
+</div>
+<p>Important: <strong>LangChain 1.0's <code>create_agent</code> is built on top of LangGraph.</strong> So LangChain is the high-level, ergonomic layer and LangGraph is the low-level engine underneath. You can start high and drop down when you need more control — and your agent is a LangGraph graph either way.</p>
+<p class="minilabel">What changed in 1.0</p>
+<ul class="checklist">
+  <li class="ok"><code>create_agent</code> is the standard way to build agents (replacing <code>create_react_agent</code> and the old agent executors).</li>
+  <li class="ok"><strong>Middleware</strong> lets you hook into every step of the loop.</li>
+  <li class="ok">Standard <strong>content blocks</strong> give one provider-neutral format for text, reasoning, citations and tool calls.</li>
+  <li class="ok">Structured output is part of the main agent loop (fewer extra LLM calls).</li>
+  <li class="ok">Legacy chains and old APIs moved to a <code>langchain-classic</code> package; the 1.0 line promises no breaking changes until 2.0.</li>
+</ul>
+
+<h2 class="sec" id="s-models">Chat models: one interface, many providers</h2>
+<p>The first thing LangChain gives you is a uniform way to talk to models. <code>init_chat_model</code> takes a <code>"provider:model"</code> string and returns an object with the same methods regardless of vendor — so swapping models is a one-line change.</p>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">from langchain.chat_models import init_chat_model
+
+model = init_chat_model("anthropic:claude-sonnet-5-5")     # or "openai:...", "google_genai:..."
+
+reply = model.invoke("In one line: what is an AI agent?")
+print(reply.content)
+
+# Same object can stream tokens as they arrive
+for chunk in model.stream("Explain MCP in two sentences."):
+    print(chunk.content, end="")
+
+# And run many prompts concurrently
+answers = model.batch(["Define RAG.", "Define LCEL."])</code></pre></div>
+<p>Every runnable thing in LangChain exposes the same trio: <code>invoke</code> (one input → one output), <code>stream</code> (output as it's produced), <code>batch</code> (many inputs). Learn these three and you can use any component.</p>
+<p>Messages are typed objects — <code>SystemMessage</code>, <code>HumanMessage</code>, <code>AIMessage</code>, <code>ToolMessage</code> — which map one-to-one onto the roles from Topic 02, so you can also pass plain <code>{"role": "...", "content": "..."}</code> dicts.</p>
+
+<h2 class="sec" id="s-lcel">Prompts, parsers and the <code>|</code> pipe (LCEL)</h2>
+<p>For <em>fixed</em> pipelines — no tool loop — LangChain still offers the <strong>LangChain Expression Language (LCEL)</strong>: chain components with the <code>|</code> operator, like Unix pipes.</p>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "You classify support emails. Reply with one word: refund, shipping or other."),
+    ("human", "{email}"),
+])
+
+chain = prompt | model | StrOutputParser()
+
+chain.invoke({"email": "My package is 8 days late, I want my money back"})
+# -&gt; "refund"</code></pre></div>
+<div class="pipe">
+  <span class="stage">{"email": "..."}<small>input dict</small></span><span class="flowarr">|</span>
+  <span class="stage o">Prompt<small>fills the template</small></span><span class="flowarr">|</span>
+  <span class="stage o">Model<small>generates</small></span><span class="flowarr">|</span>
+  <span class="stage on">Parser<small>"refund"</small></span>
+</div>
+<p>The chain is itself a runnable, so it also has <code>invoke</code>/<code>stream</code>/<code>batch</code>, and you can nest chains inside chains. LCEL is great for the <em>workflow</em> patterns from Topic 01 (chaining, routing, parallel branches). When the path isn't fixed and the model should loop on tools, use <code>create_agent</code> instead; when you need branching, cycles or persistence, use LangGraph.</p>
+
+<h2 class="sec" id="s-tools">Defining tools</h2>
+<p>A tool in LangChain is just a Python function with the <code>@tool</code> decorator. The <strong>function name</strong> becomes the tool name, the <strong>docstring</strong> becomes the description, and the <strong>type hints</strong> become the input schema — the same three things from Topic 02, generated for you.</p>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">from langchain.tools import tool
+
+@tool
+def get_order(order_id: str) -&gt; dict:
+    """Look up an order by its 4-digit id. Use this first for any order question."""
+    return {"status": "in_transit", "eta": "2026-09-28", "total": 84.50}
+
+@tool
+def issue_refund(order_id: str, amount: float, reason: str) -&gt; str:
+    """Refund an order. Only call after confirming it is late or damaged.
+    reason must be one of: late, damaged, wrong_item."""
+    return f"Refunded ${amount:.2f} for order {order_id}"</code></pre></div>
+<p>Tool descriptions are prompt text — write them with the care you'd give a system prompt. Tools can also come from <strong>MCP servers</strong> (see <code>langchain-mcp-adapters</code> in Topic 03) or from LangChain's large catalogue of integrations (search, databases, browsers, …).</p>
+
+<h2 class="sec" id="s-create-agent">create_agent — the standard way to build an agent</h2>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">from langchain.agents import create_agent
+
+agent = create_agent(
+    model="anthropic:claude-sonnet-5-5",
+    tools=[get_order, issue_refund],
+    system_prompt=(
+        "You are Acme's support agent. Check the order before refunding. "
+        "Never refund more than the order total."
+    ),
+)
+
+result = agent.invoke(
+    {"messages": [{"role": "user", "content": "Order 1042 is late - refund me please."}]}
+)
+print(result["messages"][-1].content)       # the final answer</code></pre></div>
+<p>That is a full tool-calling agent: it loops model → tools → model until the model stops asking for tools, exactly the loop from Topic 01. The input and output are a dict with a <code>messages</code> list — the agent's <strong>state</strong>.</p>
+<h3 class="sub">What's inside the loop</h3>
+<div class="pipe">
+  <span class="stage">Start</span><span class="flowarr">→</span>
+  <span class="stage on">Model node<small>decide: answer or tools?</small></span><span class="flowarr">→</span>
+  <span class="stage o">Tools node<small>run each requested tool</small></span><span class="flowarr">↺</span>
+  <span class="stage">End<small>when no tool calls</small></span>
+</div>
+<p>You can watch it work by streaming, which yields each step as it happens (great for UIs and debugging):</p>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">for step in agent.stream(
+    {"messages": [{"role": "user", "content": "Where is order 1042?"}]},
+    stream_mode="updates",            # one chunk per node that ran
+):
+    print(step)</code></pre></div>
+<ul class="checklist">
+  <li class="arw"><code>stream_mode="values"</code> — full state after each step.</li>
+  <li class="arw"><code>stream_mode="updates"</code> — only what each node changed.</li>
+  <li class="arw"><code>stream_mode="messages"</code> — LLM tokens as they are generated (typing effect).</li>
+</ul>
+
+<h2 class="sec" id="s-structured">Structured output</h2>
+<p>Want the agent's <em>final</em> answer as typed data instead of prose? Pass a Pydantic model as <code>response_format</code>. LangChain picks the best mechanism for your provider (native structured output when available, otherwise a forced tool call) and puts the parsed object in the result.</p>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">from pydantic import BaseModel
+
+class Resolution(BaseModel):
+    order_id: str
+    action_taken: str          # e.g. "refunded", "none"
+    refund_amount: float
+    customer_message: str
+
+agent = create_agent(
+    model="anthropic:claude-sonnet-5-5",
+    tools=[get_order, issue_refund],
+    response_format=Resolution,
+)
+out = agent.invoke({"messages": [{"role": "user", "content": "Order 1042 is late, refund me."}]})
+print(out["structured_response"])      # Resolution(order_id='1042', action_taken='refunded', ...)</code></pre></div>
+<p>This is how an agent hands a clean result to the next program in your pipeline — a database write, a ticket update, another agent.</p>
+
+<h2 class="sec" id="s-middleware">Middleware — hooks into the loop</h2>
+<p>Middleware is LangChain 1.0's headline feature. It lets you intercept and change what happens at each point of the agent loop <strong>without rewriting the loop</strong> — a cleaner home for the production concerns that used to bloat prompts and glue code.</p>
+<div class="frames" style="max-width:600px">
+  <div class="frm"><span>before_model</span><span class="q">trim history, redact PII, inject context</span></div>
+  <div class="frm on"><span>wrap_model_call</span><span class="q">swap model, add retries or fallbacks, change tools</span></div>
+  <div class="frm"><span>after_model</span><span class="q">validate output, require approval of tool calls</span></div>
+  <div class="frm"><span>wrap_tool_call</span><span class="q">log, retry, block, or rewrite each tool execution</span></div>
+</div>
+<p class="minilabel">Built-in middleware</p>
+<ul class="checklist">
+  <li class="ok"><strong>Human-in-the-loop</strong> — pause before chosen tools run and wait for approve / edit / reject.</li>
+  <li class="ok"><strong>Summarization</strong> — compact old messages automatically when the conversation gets long.</li>
+  <li class="ok"><strong>PII</strong> — redact, mask or block sensitive data like emails and card numbers.</li>
+</ul>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">from langchain.agents import create_agent
+from langchain.agents.middleware import HumanInTheLoopMiddleware, PIIMiddleware
+from langgraph.checkpoint.memory import InMemorySaver
+
+agent = create_agent(
+    model="anthropic:claude-sonnet-5-5",
+    tools=[get_order, issue_refund],
+    middleware=[
+        PIIMiddleware("email", strategy="redact"),                 # hide emails from the model
+        HumanInTheLoopMiddleware(interrupt_on={"issue_refund": True}),   # a human approves refunds
+    ],
+    checkpointer=InMemorySaver(),      # HITL needs saved state so it can pause and resume
+)</code></pre></div>
+<p>And a tiny custom one — log every tool call (this is the shape of most custom middleware):</p>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">from langchain.agents.middleware import wrap_tool_call
+
+@wrap_tool_call
+def log_tool_calls(request, handler):
+    print("TOOL:", request.tool_call["name"], request.tool_call["args"])
+    return handler(request)            # let the real tool run
+
+agent = create_agent(model="anthropic:claude-sonnet-5-5",
+                     tools=[get_order, issue_refund],
+                     middleware=[log_tool_calls])</code></pre></div>
+<p>Why this matters for the charter: middleware is a lightweight, built-in <strong>harness</strong> (Topic 06). Context trimming, approvals and guardrails — the things that make agents dependable — plug in here.</p>
+
+<h2 class="sec" id="s-memory">Memory: threads and checkpointers</h2>
+<p>By default each <code>invoke</code> starts fresh. To make the agent remember a conversation, give it a <strong>checkpointer</strong> and call it with a <strong>thread id</strong>:</p>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">from langgraph.checkpoint.memory import InMemorySaver
+
+agent = create_agent("anthropic:claude-sonnet-5-5", [get_order], checkpointer=InMemorySaver())
+cfg = {"configurable": {"thread_id": "customer-77"}}
+
+agent.invoke({"messages": [{"role": "user", "content": "My order is 1042."}]}, cfg)
+agent.invoke({"messages": [{"role": "user", "content": "Where is it?"}]}, cfg)   # remembers 1042</code></pre></div>
+<p><code>InMemorySaver</code> is for learning; in production you swap in a database-backed checkpointer (Postgres, SQLite, …) so memory survives restarts. For <em>long-term</em> memory across threads there is a separate store interface — covered with LangGraph in Topic 05.</p>
+
+<h2 class="sec" id="s-rag">Retrieval (RAG) in LangChain</h2>
+<p>LangChain ships the whole RAG toolbox as interchangeable parts:</p>
+<ul class="checklist">
+  <li class="arw"><strong>Document loaders</strong> — PDFs, web pages, Confluence, Drive, …</li>
+  <li class="arw"><strong>Text splitters</strong> — cut documents into overlapping chunks.</li>
+  <li class="arw"><strong>Embeddings + vector stores</strong> — index chunks for similarity search.</li>
+  <li class="arw"><strong>Retrievers</strong> — a standard "give me relevant chunks for this query" interface.</li>
+</ul>
+<p>The modern pattern is <em>agentic RAG</em>: wrap your retriever in a tool and let the agent call it when it needs facts.</p>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">@tool
+def search_policies(query: str) -&gt; str:
+    """Search Acme's support policies. Use for any question about refunds, returns or shipping rules."""
+    docs = vector_store.similarity_search(query, k=3)
+    return "\n\n".join(d.page_content for d in docs)
+
+agent = create_agent("anthropic:claude-sonnet-5-5", [get_order, search_policies])</code></pre></div>
+
+<h2 class="sec" id="s-migrate">Old LangChain → LangChain 1.0 cheat sheet</h2>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left">You see in older tutorials</th><th style="text-align:left">Use now</th></tr></thead>
+  <tbody>
+    <tr><td><code>initialize_agent(...)</code>, <code>AgentExecutor</code></td><td><code>create_agent(...)</code></td></tr>
+    <tr><td><code>langgraph.prebuilt.create_react_agent</code></td><td><code>langchain.agents.create_agent</code></td></tr>
+    <tr><td><code>LLMChain</code>, <code>SequentialChain</code>, <code>ConversationChain</code></td><td>LCEL (<code>a | b | c</code>) or an agent; legacy lives in <code>langchain-classic</code></td></tr>
+    <tr><td><code>ConversationBufferMemory</code> etc.</td><td>Checkpointer + <code>thread_id</code>; summarization middleware</td></tr>
+    <tr><td>Hand-written hooks, custom loops for approvals/PII</td><td>Middleware</td></tr>
+    <tr><td>Prompt "please output JSON"</td><td><code>response_format=</code> with a Pydantic model</td></tr>
+  </tbody>
+</table></div>
+
+<h2 class="sec" id="s-choose">LangChain vs LangGraph vs plain SDK — which to reach for?</h2>
+<ul class="checklist">
+  <li class="ok"><strong>Start with <code>create_agent</code></strong> for a standard tool-using agent. Add middleware for approvals, trimming and guardrails.</li>
+  <li class="ok"><strong>Drop to LangGraph</strong> when you need explicit branching, loops with your own routing, parallel steps, multiple cooperating agents, or fine control over state and persistence.</li>
+  <li class="ok"><strong>Use a harness (Deep Agents)</strong> when the task is long-running and needs planning, files and sub-agents out of the box.</li>
+  <li class="ok"><strong>Use the raw provider SDK</strong> if you have a single model, a few tools and want zero abstraction — the 15-line loop from Topic 01 is genuinely enough for many apps.</li>
+  <li class="no">Don't adopt a framework just because it's popular; adopt it for the specific thing it saves you (provider portability, tracing, persistence, middleware).</li>
+</ul>
+<p class="minilabel">Seeing what happened: LangSmith</p>
+<p>Because every LangChain/LangGraph run is structured, <strong>LangSmith</strong> can trace it end-to-end: each model call, tool call, token count and latency in a tree you can click through. Turning it on is mostly a couple of environment variables (check the current docs for the exact names). You'll lean on it heavily for evals in Topic 07.</p>
+
+<h2 class="sec" id="s-check">Check yourself</h2>
+<ul class="checklist">
+  <li class="arw">What are the three layers (framework / runtime / harness) and which LangChain product sits in each?</li>
+  <li class="arw">What do <code>invoke</code>, <code>stream</code> and <code>batch</code> do?</li>
+  <li class="arw">Where do a tool's name, description and schema come from when you use <code>@tool</code>?</li>
+  <li class="arw">Why does <code>HumanInTheLoopMiddleware</code> need a checkpointer?</li>
+  <li class="arw">Translate an old <code>AgentExecutor</code> snippet to <code>create_agent</code>.</li>
+  <li class="arw">Hands-on: build the Acme agent with two tools, add PII + approval middleware, stream its steps, then ask a follow-up in the same <code>thread_id</code>.</li>
+</ul>
+
+<p class="pagefoot">Topic 04 · LangChain · <a href="index.html">back to all topics</a></p>
+</main></div>
+
+<script>
+/* ---- shared hero-viz harness (do not edit) ---- */
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.innerHTML=x;return e;}
+function cap(t){var c=el('div','viz-cap');c.appendChild(el('span','pulse'));c.appendChild(document.createTextNode(t));return c;}
+
+/* ---- per-topic animation: define window.topicViz(host) ---- */
+window.topicViz = function (host) {
+  host.innerHTML = '';
+  host.appendChild(cap('create_agent — the loop, with middleware hooks at every step'));
+
+  var pipe = el('div', 'pipe');
+  var defs = [
+    ['before_model', 'PII redact · trim'],
+    ['Model', 'answer or tool?'],
+    ['after_model', 'approval check'],
+    ['Tool', 'wrap_tool_call'],
+  ];
+  var stages = defs.map(function (d, i) {
+    var s = el('span', 'stage', '<span>' + d[0] + '</span><small>' + d[1] + '</small>');
+    pipe.appendChild(s);
+    if (i < defs.length - 1) pipe.appendChild(el('span', 'flowarr', '→'));
+    return s;
+  });
+  pipe.appendChild(el('span', 'flowarr', '↺'));
+  host.appendChild(pipe);
+
+  var chips = el('div', 'rchips');
+  chips.style.marginTop = '14px';
+  var labels = ['state.messages', 'tool_call: issue_refund', 'human: approve', 'ToolMessage'];
+  var chipEls = labels.map(function (t) {
+    var c = el('span', 'rchip', t);
+    chips.appendChild(c);
+    return c;
+  });
+  host.appendChild(chips);
+  var read = el('div', 'readout');
+  host.appendChild(read);
+
+  var steps = [
+    { s: 0, c: 0, r: '<b>before_model</b> — email redacted, history trimmed, then the model is called' },
+    { s: 1, c: 1, r: '<b>Model</b> returns a tool_call: issue_refund(1042, 84.50)' },
+    { s: 2, c: 2, r: '<b>after_model</b> — HumanInTheLoop pauses; a person clicks approve' },
+    { s: 3, c: 3, r: '<b>wrap_tool_call</b> — logged, executed, result sent back as a ToolMessage' },
+    { s: 1, c: -1, r: '<span class="hit">Model sees the result, makes no more tool calls → final answer</span>' }
+  ];
+  var k = 0;
+  function frame() {
+    var f = steps[k];
+    if (k === 0) chipEls.forEach(function (c) { c.classList.remove('on'); });
+    stages.forEach(function (s, i) { s.classList.toggle('on', i === f.s); });
+    if (f.c >= 0) chipEls[f.c].classList.add('on');
+    read.innerHTML = f.r;
+    k++;
+    if (k >= steps.length) { k = 0; setTimeout(frame, 2600); }
+    else setTimeout(frame, 1800);
+  }
+  frame();
+};
+
+
+window.addEventListener('DOMContentLoaded',function(){var h=document.getElementById('heroViz');if(h&&window.topicViz){try{window.topicViz(h);}catch(e){}}});
+</script>
+</body></html>

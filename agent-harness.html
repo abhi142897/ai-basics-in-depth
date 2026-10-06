@@ -1,0 +1,389 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Harness — Agentic AI Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F5F3; --card:#FFFFFF; --ink:#1A1712; --muted:#6B635A; --hair:#E8E4DE;
+  --accent:#E8710A; --accent-d:#C25E00; --accent-soft:#FFF2E4;
+  --teal:#0E9C8E; --coral:#E5484D; --green:#12924F; --violet:#7C4DDB; --blue:#2563EB;
+  --disp:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.62;font-size:15.5px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.top{position:sticky;top:0;z-index:20;background:rgba(246,245,243,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair);padding:12px 20px;display:flex;align-items:center;gap:14px}
+.top .home{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--muted)}
+.top .home:hover{color:var(--accent);text-decoration:none}
+.top .crumb{font-family:var(--disp);font-weight:600;font-size:15px}
+.shell{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:240px 1fr;gap:36px;padding:28px 20px 100px}
+.toc{position:sticky;top:70px;align-self:start;max-height:calc(100vh - 96px);overflow:auto;font-size:13px;padding-right:8px}
+.toc h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.toc a{display:block;color:var(--muted);padding:4px 10px;border-left:2px solid var(--hair);margin-left:2px;border-radius:0 6px 6px 0}
+.toc a:hover{color:var(--ink);background:var(--card);text-decoration:none}
+.content{min-width:0;max-width:820px}
+.doc-title{font-family:var(--disp);font-weight:700;font-size:clamp(28px,5vw,42px);letter-spacing:-.015em;margin:0 0 6px}
+h2.sec{font-family:var(--disp);font-weight:600;font-size:23px;margin:46px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--ink);scroll-margin-top:80px}
+h3.sub{font-family:var(--disp);font-weight:600;font-size:17.5px;margin:26px 0 8px}
+h4.sub4{font-family:var(--disp);font-weight:600;font-size:15px;margin:18px 0 6px;color:#33291f}
+p{margin:11px 0}
+p.estep{font-family:var(--disp);font-weight:600;font-size:15.5px;margin:18px 0 6px;color:var(--accent-d)}
+p.minilabel{font-family:var(--disp);font-weight:600;font-size:14px;margin:16px 0 4px;color:var(--ink);background:var(--accent-soft);display:inline-block;padding:3px 10px;border-radius:8px}
+ul,ol{margin:11px 0;padding-left:22px}li{margin:5px 0}
+ul.checklist{list-style:none;padding-left:4px}
+ul.checklist li{position:relative;padding-left:26px;margin:6px 0}
+ul.checklist li::before{position:absolute;left:0;top:0;font-weight:700}
+ul.checklist li.ok::before{content:"✓";color:var(--green)}
+ul.checklist li.no::before{content:"✕";color:var(--coral)}
+ul.checklist li.arw::before{content:"→";color:var(--accent)}
+hr{border:none;border-top:1px solid var(--hair);margin:26px 0}
+strong{font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:var(--accent-soft);color:var(--accent-d);padding:1px 6px;border-radius:5px}
+blockquote{margin:16px 0;padding:10px 16px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;color:#3a2f22}
+.tablewrap{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--hair);padding:8px 12px}
+th{background:var(--card);font-family:var(--disp);font-weight:600}
+tbody tr:nth-child(even){background:#FBFAF8}
+.fig{margin:18px 0;text-align:center}
+.fig img{max-width:100%;height:auto;border:1px solid var(--hair);border-radius:12px;background:#fff;padding:8px}
+.fig figcaption{font-size:12.5px;color:var(--muted);margin-top:8px;font-family:var(--mono)}
+.code{position:relative;margin:14px 0;border:1px solid var(--hair);border-radius:12px;overflow:hidden;background:#161a20}
+.code.inline{background:#20262f}
+.code.ascii{background:#1b2530}
+.code-tag{position:absolute;top:8px;right:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8891a8;z-index:2}
+.code pre{margin:0;padding:15px 18px;overflow-x:auto}
+.code code{background:none;color:#e7ebf1;padding:0;font-size:13px;line-height:1.6;display:block}
+.code .language-plaintext{color:#cfe0dc;white-space:pre}
+.hero-viz{margin:18px 0 28px;background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:22px;min-height:170px}
+.viz-cap{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.viz-cap .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.readout{font-family:var(--mono);font-size:14px;margin-top:16px;color:var(--ink);min-height:20px}
+.readout .hit{color:var(--green);font-weight:700}
+.readout .warn{color:var(--coral);font-weight:700}
+/* casting ladder */
+.ladder{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rung{padding:9px 12px;border-radius:10px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-weight:700;font-size:13px;transition:all .45s ease}
+.rung.on{border-color:var(--green);background:#ECFDF3;transform:translateY(-3px)}
+.rung.warnon{border-color:var(--coral);background:#FEF2F2}
+.arrw{color:var(--muted);font-family:var(--mono)}
+/* jvm pipeline */
+.pipe{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stage{padding:12px 14px;border-radius:12px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-size:12.5px;font-weight:600;text-align:center;min-width:92px;transition:all .4s ease}
+.stage.on{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-3px)}
+.stage.hot{border-color:var(--coral);background:#FEF2F2;color:var(--coral)}
+.stage small{display:block;font-weight:400;color:var(--muted);font-size:10.5px;margin-top:2px}
+.flowarr{color:var(--accent);font-size:18px}
+/* oop dispatch */
+.dispatch{display:flex;flex-direction:column;gap:14px}
+.drow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pill{padding:9px 13px;border-radius:10px;font-family:var(--mono);font-weight:700;font-size:13px;border:2px solid var(--hair);background:#fff;transition:all .45s}
+.pill.ref{border-color:var(--muted);color:var(--muted)}
+.pill.obj.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+.pill.impl{border-color:var(--hair);opacity:.5}
+.pill.impl.win{border-color:var(--green);background:#ECFDF3;color:var(--green);opacity:1;transform:translateY(-3px)}
+.pagefoot{max-width:820px;margin:40px auto 0;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.toc{display:none}}
+
+.cpanel{background:#161a20;border-radius:12px;padding:14px 16px;font-family:var(--mono);font-size:12.5px;color:#e7ebf1;line-height:1.65;transition:opacity .5s}
+.cpanel .kw{color:#C792EA}.cpanel .ty{color:#4FC1A6}.cpanel .mut{color:#8891a8}
+.twocol{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.twocol .cpanel{flex:1;min-width:230px}
+.earrow{font-size:24px;color:var(--accent)}
+.fade{opacity:.25}
+.rchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.rchip{padding:7px 11px;border-radius:9px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-size:12px;font-weight:600;opacity:0;transform:translateY(6px);transition:all .4s}
+.rchip.on{opacity:1;transform:none;border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+.rchip .v{color:var(--green);font-weight:700}
+.classbox{display:inline-block;padding:10px 16px;border-radius:10px;border:2px solid var(--accent);background:var(--accent-soft);font-family:var(--mono);font-weight:700;color:var(--accent-d);margin-bottom:12px}
+.retstrip{display:flex;gap:10px;flex-wrap:wrap}
+.retstage{flex:1;min-width:120px;border:2px solid var(--hair);border-radius:10px;padding:10px;text-align:center;background:#fff;transition:all .45s}
+.retstage .rt{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.retstage .rl{font-family:var(--disp);font-weight:600;font-size:14px;margin-top:3px}
+.retstage.on{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-3px)}
+.retstage.gone{opacity:.3}
+.retstage.keep{border-color:var(--green);background:#ECFDF3}
+.frames{display:flex;flex-direction:column;gap:7px;max-width:460px}
+.frm{padding:10px 14px;border-radius:10px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-size:13px;font-weight:600;display:flex;justify-content:space-between;align-items:center;transition:all .4s}
+.frm .q{font-size:11px;font-weight:400;color:var(--muted)}
+.frm.hasexc{border-color:var(--coral);background:#FEF2F2;color:var(--coral)}
+.frm.crash{border-color:var(--coral);background:var(--coral);color:#fff}
+.frm.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>window.addEventListener('DOMContentLoaded',function(){try{document.querySelectorAll('code.language-java,code.language-python,code.language-json,code.language-javascript,code.language-bash,code.language-yaml').forEach(function(b){hljs.highlightElement(b)});}catch(e){}});</script>
+</head><body>
+<div class="top"><a class="home" href="index.html">&larr; All topics</a><span class="crumb">06 · Agent Harness</span></div>
+<div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-def">What a harness is — and isn't</a><a href="#s-anatomy">The anatomy of a harness</a><a href="#s-tiny">A tiny harness, in code</a><a href="#s-tools">Tools in a harness: fewer, sharper, general</a><a href="#s-context">Context engineering — the harness's hardest job</a><a href="#s-planning">Planning, to-do lists and delegation</a><a href="#s-permissions">Permissions, sandboxes and approvals</a><a href="#s-longrunning">Long-running agents: surviving many context windows</a><a href="#s-durability">Reliability: limits, retries, checkpoints</a><a href="#s-observability">Observability</a><a href="#s-buildvsbuy">Build your own vs use an existing harness</a><a href="#s-check">Check yourself</a></nav><main class="content">
+<h1 class="doc-title">Agent Harness</h1>
+<div class="hero-viz" id="heroViz"></div>
+<p class="lede">A language model by itself isn't an agent. The thing that turns raw model intelligence into a dependable worker is the <strong>agent harness</strong>: all the code <em>around</em> the model — the loop, tools, permissions, context management, memory, sandbox, limits and logging. The compact formula people use is <strong>Agent = Model + Harness</strong>.</p>
+<p>This is the topic where the earlier pages click together. Topic 01's loop, Topic 02's context window, Topic 03's tools and Topic 05's durable execution are all <em>parts of a harness</em>. And it is the answer to "why does the same model feel brilliant in one product and clumsy in another?" — usually, the harness.</p>
+<blockquote>Terminology warning: the word "harness" is used for two different things. This page is about the <strong>agent harness</strong> (runs the agent). Topic 07 uses <strong>eval harness</strong> (runs the tests). Same word, different jobs — you need both.</blockquote>
+<hr>
+
+<h2 class="sec" id="s-def">What a harness is — and isn't</h2>
+<p>Strip a coding assistant, a research agent or a support bot down and you find a model plus a lot of unglamorous engineering. If you are not the model, you are the harness.</p>
+<div class="pipe">
+  <span class="stage">Model<small>reasons, picks actions</small></span>
+  <span class="flowarr">+</span>
+  <span class="stage on">Harness<small>everything else</small></span>
+  <span class="flowarr">=</span>
+  <span class="stage o">Agent<small>what the user meets</small></span>
+</div>
+<p class="minilabel">Framework vs runtime vs harness</p>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left">Layer</th><th style="text-align:left">Role</th><th style="text-align:left">Examples</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Framework</strong></td><td>Building blocks: model interfaces, tool abstractions, loop helpers. You assemble.</td><td>LangChain, Vercel AI SDK, smolagents</td></tr>
+    <tr><td><strong>Runtime</strong></td><td>Executes workflows durably: state, persistence, pause/resume, streaming.</td><td>LangGraph</td></tr>
+    <tr><td><strong>Harness</strong></td><td>Opinionated, batteries-included agent: planning, files, context management, sub-agents, permissions — decisions already made.</td><td>Claude Code and the Claude Agent SDK, LangChain Deep Agents, OpenAI Agents SDK (with its sandbox agents)</td></tr>
+  </tbody>
+</table></div>
+<p>When Anthropic renamed the Claude Code SDK to the <strong>Claude Agent SDK</strong>, it described it as the same agent harness that powers Claude Code — the loop, tools and context management, available for you to use in Python and TypeScript. That's the key insight: a harness is a <em>reusable product</em>, not just a pile of glue.</p>
+
+<h2 class="sec" id="s-anatomy">The anatomy of a harness</h2>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left">Component</th><th style="text-align:left">Question it answers</th><th style="text-align:left">Acme example</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Loop</strong></td><td>How does it keep going, and when does it stop?</td><td>model → tools → model, max 25 steps</td></tr>
+    <tr><td><strong>Tools</strong></td><td>What can the model do?</td><td><code>get_order</code>, <code>issue_refund</code>, file read/write</td></tr>
+    <tr><td><strong>Permissions</strong></td><td>What is it <em>allowed</em> to do, and who approves?</td><td>refunds &gt; $200 need a human</td></tr>
+    <tr><td><strong>Context management</strong></td><td>What's in the window right now?</td><td>trim old results, summarise long threads</td></tr>
+    <tr><td><strong>Memory</strong></td><td>What persists beyond this run?</td><td>customer preferences, case notes</td></tr>
+    <tr><td><strong>Execution environment</strong></td><td>Where does code and shell run, safely?</td><td>sandboxed container, no prod credentials</td></tr>
+    <tr><td><strong>Planning &amp; delegation</strong></td><td>How does it organise big tasks?</td><td>to-do list; sub-agent for policy research</td></tr>
+    <tr><td><strong>Limits &amp; recovery</strong></td><td>What stops runaway cost or loops? What if it crashes?</td><td>token budget, retries, checkpoints</td></tr>
+    <tr><td><strong>Observability</strong></td><td>Can you see what it did and why?</td><td>full traces of every step</td></tr>
+  </tbody>
+</table></div>
+<p>The model <em>asks</em> for things; the harness <em>owns</em> them. The model can request <code>issue_refund</code>, but it can't enforce the $200 rule against itself. Only the harness can — which is why safety-critical rules belong here and not in the prompt.</p>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left"></th><th style="text-align:left">Model</th><th style="text-align:left">Harness</th></tr></thead>
+  <tbody>
+    <tr><td>Tools</td><td>Asks for them</td><td>Owns and executes them</td></tr>
+    <tr><td>Permissions</td><td>Can't enforce them</td><td>Enforces them</td></tr>
+    <tr><td>Context</td><td>Reads what it's given</td><td>Decides what to give</td></tr>
+    <tr><td>Stopping</td><td>May never decide to stop</td><td>Caps steps, tokens, time</td></tr>
+  </tbody>
+</table></div>
+
+<h2 class="sec" id="s-tiny">A tiny harness, in code</h2>
+<p>Here is the Topic 01 loop grown up into a harness. It's framework-free on purpose — read it as a list of responsibilities. (<code>model</code>, <code>ask_human</code> and <code>log</code> are assumed helpers.)</p>
+<div class="code"><span class="code-tag">Python (sketch)</span><pre><code class="language-python">class Harness:
+    def __init__(self, model, tools, rules, max_steps=25, max_tool_chars=4000):
+        self.model, self.tools, self.rules = model, tools, rules
+        self.max_steps, self.max_tool_chars = max_steps, max_tool_chars
+
+    def run(self, goal):
+        ctx = [SYSTEM_PROMPT, {"role": "user", "content": goal}]
+
+        for step in range(self.max_steps):                 # LIMITS: bounded loop
+            ctx = self.compact(ctx)                        # CONTEXT: keep the window healthy
+            reply = self.model(ctx, tools=self.schemas())
+            ctx.append(reply)
+            log(step, reply)                               # OBSERVABILITY
+
+            if not reply.tool_calls:
+                return reply.text
+
+            for call in reply.tool_calls:
+                verdict = self.rules.check(call)           # PERMISSIONS: code, not prompt
+                if verdict == "deny":
+                    result = f"DENIED by policy: {self.rules.why(call)}"
+                elif verdict == "ask" and not ask_human(call):
+                    result = "Human rejected this action."
+                else:
+                    result = self.safe_run(call)           # TOOLS: errors become observations
+                ctx.append(tool_message(call, self.truncate(result)))   # CONTEXT: cap size
+        return "Stopped: step limit reached."
+
+    def safe_run(self, call):
+        try:
+            return self.tools[call.name](**call.args)
+        except Exception as e:
+            return f"Error: {e}"
+
+    def truncate(self, text):
+        text = str(text)
+        return text if len(text) &lt;= self.max_tool_chars else text[: self.max_tool_chars] + "\n...[truncated]"</code></pre></div>
+<p>Notice what <em>isn't</em> there: any clever AI. Every line is ordinary engineering — and every line directly affects whether the agent is safe, affordable and reliable.</p>
+
+<h2 class="sec" id="s-tools">Tools in a harness: fewer, sharper, general</h2>
+<ul class="checklist">
+  <li class="ok"><strong>A shell and a filesystem are the most general tools</strong> — with <code>bash</code> + read/write/edit, a model can search code, run tests, transform data and inspect results without a bespoke tool per task. This is why coding agents generalise so well to other knowledge work.</li>
+  <li class="ok"><strong>Prefer fewer, well-designed tools.</strong> Several teams have reported better results after <em>removing</em> tools. Each tool costs context and adds a choice the model can get wrong.</li>
+  <li class="ok"><strong>Shape the output.</strong> Return what the model needs for its next decision — not the raw 10,000-line dump. Offer search/pagination instead.</li>
+  <li class="ok"><strong>Write errors for the model</strong> (what went wrong, what to try next).</li>
+  <li class="ok"><strong>Treat tool interfaces like a public API</strong> — models are often <em>post-trained with a specific harness's tools in the loop</em>, so changing a familiar tool's shape can hurt quality.</li>
+  <li class="arw"><strong>MCP</strong> (Topic 03) is how a harness plugs in third-party tools without custom code; the harness still decides which servers/tools are allowed.</li>
+</ul>
+
+<h2 class="sec" id="s-context">Context engineering — the harness's hardest job</h2>
+<p>Topic 02 introduced the context window and context rot. A harness is where you actually <em>manage</em> it. The principle: find the <strong>smallest set of high-signal tokens</strong> that lets the model do the next step well.</p>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left">Technique</th><th style="text-align:left">How it works</th><th style="text-align:left">Trade-off</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Tool-result clearing</strong></td><td>Once a result has been used, replace it with a short stub</td><td>Cheap and safe; model can re-fetch if needed</td></tr>
+    <tr><td><strong>Compaction</strong></td><td>As the window nears its limit, summarise history and continue with the summary</td><td>Risk: the summary drops a detail that mattered later</td></tr>
+    <tr><td><strong>Structured notes / scratchpad</strong></td><td>Agent writes key facts to a file (<code>notes.md</code>) and re-reads it</td><td>Survives compaction and restarts; needs discipline</td></tr>
+    <tr><td><strong>Just-in-time loading</strong></td><td>Keep paths/IDs in context; load content only when needed</td><td>More tool calls, far fewer tokens</td></tr>
+    <tr><td><strong>Sub-agents</strong></td><td>Delegate a messy side-task to a fresh window; get back a short digest</td><td>Extra cost; digest may omit nuance</td></tr>
+    <tr><td><strong>Progressive disclosure</strong></td><td>Show a one-line menu; reveal full instructions only on demand</td><td>Needs good descriptions so the model picks right</td></tr>
+  </tbody>
+</table></div>
+<p class="minilabel">Progressive disclosure in practice: skills</p>
+<p>A neat modern pattern is the <strong>skill</strong>: a folder with a <code>SKILL.md</code> (plus optional scripts and reference files). At startup the harness loads only each skill's short name and description. When a task matches, the model reads the full <code>SKILL.md</code>; if that points to more files, those are read only if needed. You can ship dozens of capabilities without paying for them all in every request — the context equivalent of lazy loading.</p>
+<blockquote>Practical rule: every token in the window should earn its place. If the model doesn't need it for the <em>next</em> decision, it shouldn't be there.</blockquote>
+
+<h2 class="sec" id="s-planning">Planning, to-do lists and delegation</h2>
+<p>For multi-step work, models drift. Harnesses counter that with structure:</p>
+<ul class="checklist">
+  <li class="arw"><strong>A to-do / plan tool</strong> — the model writes its plan as a checklist and ticks items off. The list stays in context, which keeps it focused on the goal across dozens of steps (and shows the user progress).</li>
+  <li class="arw"><strong>A virtual or real filesystem</strong> — plans, drafts and findings live in files, not in the chat transcript.</li>
+  <li class="arw"><strong>Sub-agents</strong> — "research our refund policy" runs in an isolated context; only the conclusion returns. This keeps the main thread clean and allows parallel work.</li>
+</ul>
+<p>Deep Agents (LangChain's harness) bundles exactly these: planning, a filesystem, sub-agent spawning and long-term memory, with LangGraph providing durable execution beneath.</p>
+
+<h2 class="sec" id="s-permissions">Permissions, sandboxes and approvals</h2>
+<p>The more power an agent has, the more the harness must constrain it. Think in <strong>risk tiers</strong>:</p>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left">Tier</th><th style="text-align:left">Examples</th><th style="text-align:left">Policy</th></tr></thead>
+  <tbody>
+    <tr><td>Read-only, low risk</td><td>get_order, search policies, read file</td><td>Auto-allow</td></tr>
+    <tr><td>Reversible writes</td><td>edit a draft, add an internal note</td><td>Allow, log, make undoable</td></tr>
+    <tr><td>Costly or external effects</td><td>issue_refund, send email, post a message</td><td>Ask a human (or threshold rules: auto under $200)</td></tr>
+    <tr><td>Destructive / sensitive</td><td>delete data, change permissions, spend money at scale</td><td>Deny by default, or require strong approval</td></tr>
+  </tbody>
+</table></div>
+<ul class="checklist">
+  <li class="ok"><strong>Allow-lists beat block-lists.</strong> Enumerate the paths, commands and domains the agent <em>may</em> use.</li>
+  <li class="ok"><strong>Sandbox code execution</strong> — container or VM, no production secrets, restricted network, resource limits.</li>
+  <li class="ok"><strong>Hooks</strong> — run your code before/after tool calls to validate, block, or log (supported by several harnesses).</li>
+  <li class="ok"><strong>Human-in-the-loop</strong> — approve / edit / reject, ideally with a durable pause (Topic 05).</li>
+  <li class="no">Don't rely on "please don't do X" in the system prompt for anything that matters — enforce it in code.</li>
+</ul>
+
+<h2 class="sec" id="s-longrunning">Long-running agents: surviving many context windows</h2>
+<p>Some jobs (build a feature, migrate a codebase, produce a research report) take hours — longer than any single context window. Engineering teams have converged on a pattern for this:</p>
+<div class="frames" style="max-width:640px">
+  <div class="frm"><span>1. Initializer session</span><span class="q">sets up the environment, writes a feature list and a progress file</span></div>
+  <div class="frm on"><span>2. Work session</span><span class="q">fresh context: reads progress file + git log, does <em>one</em> item</span></div>
+  <div class="frm"><span>3. Leave a clean state</span><span class="q">tests pass, commit, update the progress file</span></div>
+  <div class="frm"><span>4. Next session</span><span class="q">starts fresh again — memory lives in files and git, not the chat</span></div>
+</div>
+<p>The insight: <strong>the agent's memory is the filesystem</strong>, not the context window. Each session is like a new engineer arriving for a shift who reads the handover notes. Without this discipline, agents tend to try to do everything at once, run out of context mid-task, or declare victory early.</p>
+
+<h2 class="sec" id="s-durability">Reliability: limits, retries, checkpoints</h2>
+<ul class="checklist">
+  <li class="ok"><strong>Budgets:</strong> max steps, max tokens, max wall-clock time, max cost per run.</li>
+  <li class="ok"><strong>Loop detection:</strong> same tool + same args three times in a row → stop or change strategy.</li>
+  <li class="ok"><strong>Retries with backoff</strong> for flaky tools and rate limits; never blindly retry non-idempotent actions.</li>
+  <li class="ok"><strong>Checkpoint/resume</strong> so a crash at step 40 doesn't cost the first 39 (LangGraph does this for you).</li>
+  <li class="ok"><strong>Graceful failure:</strong> when stuck, escalate to a human with a clear summary instead of looping.</li>
+</ul>
+
+<h2 class="sec" id="s-observability">Observability</h2>
+<p>You cannot improve what you can't see. A good harness records, for every run, a <strong>trace</strong>: each model call (prompt, response, tokens, latency), each tool call (args, result, duration, errors), each permission decision and each compaction. These traces are the raw material for debugging <em>and</em> for evals (Topic 07) — every production failure should be convertible into a test case in one click.</p>
+
+<h2 class="sec" id="s-buildvsbuy">Build your own vs use an existing harness</h2>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left">Use an existing harness when…</th><th style="text-align:left">Build / customise when…</th></tr></thead>
+  <tbody>
+    <tr><td>Your task looks like coding, research or file-based knowledge work</td><td>You have strict domain rules or compliance needs</td></tr>
+    <tr><td>You want to ship quickly and inherit tested defaults</td><td>You need tight control over cost, latency and tool set</td></tr>
+    <tr><td>You're happy to adopt its tool and permission model</td><td>Your tools are specialised (your own APIs, MCP servers)</td></tr>
+  </tbody>
+</table></div>
+<p>Most real teams do both: start from an existing harness (Agent SDK, Deep Agents, …), then add their own tools, permission rules and evals on top.</p>
+<blockquote>A useful long-term view: <strong>as models improve, harnesses should get simpler.</strong> Scaffolding that once compensated for model weaknesses (forced planning steps, heavy prompt tricks) can become dead weight. Re-test your harness with each new model — and let your evals tell you what to delete.</blockquote>
+
+<h2 class="sec" id="s-check">Check yourself</h2>
+<ul class="checklist">
+  <li class="arw">Complete the sentence: Agent = ______ + ______. What belongs to each side?</li>
+  <li class="arw">Why can't a system prompt enforce the "$200 refund limit"? Where must it live?</li>
+  <li class="arw">Name four context-management techniques and when you'd use each.</li>
+  <li class="arw">What is progressive disclosure, and how do skills use it?</li>
+  <li class="arw">Why is the filesystem a better "memory" than the chat transcript for long-running work?</li>
+  <li class="arw">What's the difference between an agent harness and an eval harness?</li>
+  <li class="arw">Hands-on: extend the tiny harness with a loop detector and a $200 approval rule; try to break it with a prompt-injected request.</li>
+</ul>
+
+<p class="pagefoot">Topic 06 · Agent Harness · <a href="index.html">back to all topics</a></p>
+</main></div>
+
+<script>
+/* ---- shared hero-viz harness (do not edit) ---- */
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.innerHTML=x;return e;}
+function cap(t){var c=el('div','viz-cap');c.appendChild(el('span','pulse'));c.appendChild(document.createTextNode(t));return c;}
+
+/* ---- per-topic animation: define window.topicViz(host) ---- */
+window.topicViz = function (host) {
+  host.innerHTML = '';
+  host.appendChild(cap('Agent = Model + Harness — the model asks, the harness decides'));
+
+  var pipe = el('div', 'pipe');
+  var model = el('span', 'stage', '<span>Model</span><small>proposes actions</small>');
+  var harness = el('span', 'stage', '<span>Harness</span><small>owns the rules</small>');
+  var world = el('span', 'stage', '<span>Tools &amp; world</span><small>files · APIs · shell</small>');
+  pipe.appendChild(model);
+  pipe.appendChild(el('span', 'flowarr', '→'));
+  pipe.appendChild(harness);
+  pipe.appendChild(el('span', 'flowarr', '→'));
+  pipe.appendChild(world);
+  host.appendChild(pipe);
+
+  var chips = el('div', 'rchips');
+  chips.style.marginTop = '14px';
+  var names = ['Permissions', 'Context', 'Limits', 'Sandbox', 'Memory', 'Logs'];
+  var chipEls = names.map(function (n) {
+    var c = el('span', 'rchip', n);
+    c.style.opacity = '.55'; c.style.transform = 'none';
+    chips.appendChild(c);
+    return c;
+  });
+  host.appendChild(chips);
+
+  var panel = el('div', 'cpanel');
+  panel.style.marginTop = '12px';
+  panel.style.minHeight = '48px';
+  host.appendChild(panel);
+  var read = el('div', 'readout');
+  host.appendChild(read);
+
+  var scenes = [
+    { chip: 0, bad: true, p: '<span class="mut">model →</span> <span class="kw">issue_refund</span>(<span class="ty">"1042"</span>, <span class="ty">950.00</span>)', r: '<span class="warn">Permissions: refund over $200 → needs approval, not auto-run</span>' },
+    { chip: 1, bad: false, p: '<span class="mut">model →</span> <span class="kw">read_file</span>(<span class="ty">"carrier_log.txt"</span>)  <span class="mut">// 48,000 lines</span>', r: 'Context: result truncated to 200 lines + "…[truncated]" before the model sees it' },
+    { chip: 3, bad: false, p: '<span class="mut">model →</span> <span class="kw">bash</span>(<span class="ty">"python analyse.py"</span>)', r: 'Sandbox: runs in a throw-away container with no production credentials' },
+    { chip: 2, bad: true, p: '<span class="mut">step 25 / 25</span> — same failing call repeated 3 times', r: '<span class="warn">Limits: loop detected → run stopped, escalated to a human</span>' },
+    { chip: 4, bad: false, p: '<span class="mut">model →</span> <span class="kw">write_file</span>(<span class="ty">"notes.md"</span>, "customer prefers email")', r: 'Memory: facts saved outside the context window, so they survive compaction' },
+    { chip: 5, bad: false, p: '<span class="mut">every step</span> → trace: prompt, tool args, result, tokens, latency', r: '<span class="hit">Logs: the whole run is replayable — and ready to become an eval case</span>' }
+  ];
+  var k = 0;
+  function frame() {
+    var f = scenes[k];
+    chipEls.forEach(function (c, i) {
+      c.classList.toggle('on', i === f.chip);
+      c.style.opacity = i === f.chip ? '1' : '.55';
+      c.style.transform = 'none';
+    });
+    harness.classList.remove('on', 'hot');
+    harness.classList.add(f.bad ? 'hot' : 'on');
+    model.classList.add('on');
+    world.classList.toggle('on', !f.bad);
+    panel.innerHTML = f.p;
+    read.innerHTML = f.r;
+    k = (k + 1) % scenes.length;
+    setTimeout(frame, k === 0 ? 2800 : 2100);
+  }
+  frame();
+};
+
+
+window.addEventListener('DOMContentLoaded',function(){var h=document.getElementById('heroViz');if(h&&window.topicViz){try{window.topicViz(h);}catch(e){}}});
+</script>
+</body></html>

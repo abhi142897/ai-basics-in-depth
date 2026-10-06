@@ -1,0 +1,374 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tool Calling, Context & Memory — Agentic AI Notes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F6F5F3; --card:#FFFFFF; --ink:#1A1712; --muted:#6B635A; --hair:#E8E4DE;
+  --accent:#E8710A; --accent-d:#C25E00; --accent-soft:#FFF2E4;
+  --teal:#0E9C8E; --coral:#E5484D; --green:#12924F; --violet:#7C4DDB; --blue:#2563EB;
+  --disp:"Space Grotesk",system-ui,sans-serif; --body:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.62;font-size:15.5px}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.top{position:sticky;top:0;z-index:20;background:rgba(246,245,243,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--hair);padding:12px 20px;display:flex;align-items:center;gap:14px}
+.top .home{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--muted)}
+.top .home:hover{color:var(--accent);text-decoration:none}
+.top .crumb{font-family:var(--disp);font-weight:600;font-size:15px}
+.shell{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:240px 1fr;gap:36px;padding:28px 20px 100px}
+.toc{position:sticky;top:70px;align-self:start;max-height:calc(100vh - 96px);overflow:auto;font-size:13px;padding-right:8px}
+.toc h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.toc a{display:block;color:var(--muted);padding:4px 10px;border-left:2px solid var(--hair);margin-left:2px;border-radius:0 6px 6px 0}
+.toc a:hover{color:var(--ink);background:var(--card);text-decoration:none}
+.content{min-width:0;max-width:820px}
+.doc-title{font-family:var(--disp);font-weight:700;font-size:clamp(28px,5vw,42px);letter-spacing:-.015em;margin:0 0 6px}
+h2.sec{font-family:var(--disp);font-weight:600;font-size:23px;margin:46px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--ink);scroll-margin-top:80px}
+h3.sub{font-family:var(--disp);font-weight:600;font-size:17.5px;margin:26px 0 8px}
+h4.sub4{font-family:var(--disp);font-weight:600;font-size:15px;margin:18px 0 6px;color:#33291f}
+p{margin:11px 0}
+p.estep{font-family:var(--disp);font-weight:600;font-size:15.5px;margin:18px 0 6px;color:var(--accent-d)}
+p.minilabel{font-family:var(--disp);font-weight:600;font-size:14px;margin:16px 0 4px;color:var(--ink);background:var(--accent-soft);display:inline-block;padding:3px 10px;border-radius:8px}
+ul,ol{margin:11px 0;padding-left:22px}li{margin:5px 0}
+ul.checklist{list-style:none;padding-left:4px}
+ul.checklist li{position:relative;padding-left:26px;margin:6px 0}
+ul.checklist li::before{position:absolute;left:0;top:0;font-weight:700}
+ul.checklist li.ok::before{content:"✓";color:var(--green)}
+ul.checklist li.no::before{content:"✕";color:var(--coral)}
+ul.checklist li.arw::before{content:"→";color:var(--accent)}
+hr{border:none;border-top:1px solid var(--hair);margin:26px 0}
+strong{font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:var(--accent-soft);color:var(--accent-d);padding:1px 6px;border-radius:5px}
+blockquote{margin:16px 0;padding:10px 16px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;color:#3a2f22}
+.tablewrap{overflow-x:auto;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--hair);padding:8px 12px}
+th{background:var(--card);font-family:var(--disp);font-weight:600}
+tbody tr:nth-child(even){background:#FBFAF8}
+.fig{margin:18px 0;text-align:center}
+.fig img{max-width:100%;height:auto;border:1px solid var(--hair);border-radius:12px;background:#fff;padding:8px}
+.fig figcaption{font-size:12.5px;color:var(--muted);margin-top:8px;font-family:var(--mono)}
+.code{position:relative;margin:14px 0;border:1px solid var(--hair);border-radius:12px;overflow:hidden;background:#161a20}
+.code.inline{background:#20262f}
+.code.ascii{background:#1b2530}
+.code-tag{position:absolute;top:8px;right:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#8891a8;z-index:2}
+.code pre{margin:0;padding:15px 18px;overflow-x:auto}
+.code code{background:none;color:#e7ebf1;padding:0;font-size:13px;line-height:1.6;display:block}
+.code .language-plaintext{color:#cfe0dc;white-space:pre}
+.hero-viz{margin:18px 0 28px;background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:22px;min-height:170px}
+.viz-cap{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.viz-cap .pulse{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+.readout{font-family:var(--mono);font-size:14px;margin-top:16px;color:var(--ink);min-height:20px}
+.readout .hit{color:var(--green);font-weight:700}
+.readout .warn{color:var(--coral);font-weight:700}
+/* casting ladder */
+.ladder{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rung{padding:9px 12px;border-radius:10px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-weight:700;font-size:13px;transition:all .45s ease}
+.rung.on{border-color:var(--green);background:#ECFDF3;transform:translateY(-3px)}
+.rung.warnon{border-color:var(--coral);background:#FEF2F2}
+.arrw{color:var(--muted);font-family:var(--mono)}
+/* jvm pipeline */
+.pipe{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.stage{padding:12px 14px;border-radius:12px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-size:12.5px;font-weight:600;text-align:center;min-width:92px;transition:all .4s ease}
+.stage.on{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-3px)}
+.stage.hot{border-color:var(--coral);background:#FEF2F2;color:var(--coral)}
+.stage small{display:block;font-weight:400;color:var(--muted);font-size:10.5px;margin-top:2px}
+.flowarr{color:var(--accent);font-size:18px}
+/* oop dispatch */
+.dispatch{display:flex;flex-direction:column;gap:14px}
+.drow{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pill{padding:9px 13px;border-radius:10px;font-family:var(--mono);font-weight:700;font-size:13px;border:2px solid var(--hair);background:#fff;transition:all .45s}
+.pill.ref{border-color:var(--muted);color:var(--muted)}
+.pill.obj.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+.pill.impl{border-color:var(--hair);opacity:.5}
+.pill.impl.win{border-color:var(--green);background:#ECFDF3;color:var(--green);opacity:1;transform:translateY(-3px)}
+.pagefoot{max-width:820px;margin:40px auto 0;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+@media(max-width:900px){.shell{grid-template-columns:1fr}.toc{display:none}}
+
+.cpanel{background:#161a20;border-radius:12px;padding:14px 16px;font-family:var(--mono);font-size:12.5px;color:#e7ebf1;line-height:1.65;transition:opacity .5s}
+.cpanel .kw{color:#C792EA}.cpanel .ty{color:#4FC1A6}.cpanel .mut{color:#8891a8}
+.twocol{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.twocol .cpanel{flex:1;min-width:230px}
+.earrow{font-size:24px;color:var(--accent)}
+.fade{opacity:.25}
+.rchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.rchip{padding:7px 11px;border-radius:9px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-size:12px;font-weight:600;opacity:0;transform:translateY(6px);transition:all .4s}
+.rchip.on{opacity:1;transform:none;border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+.rchip .v{color:var(--green);font-weight:700}
+.classbox{display:inline-block;padding:10px 16px;border-radius:10px;border:2px solid var(--accent);background:var(--accent-soft);font-family:var(--mono);font-weight:700;color:var(--accent-d);margin-bottom:12px}
+.retstrip{display:flex;gap:10px;flex-wrap:wrap}
+.retstage{flex:1;min-width:120px;border:2px solid var(--hair);border-radius:10px;padding:10px;text-align:center;background:#fff;transition:all .45s}
+.retstage .rt{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.retstage .rl{font-family:var(--disp);font-weight:600;font-size:14px;margin-top:3px}
+.retstage.on{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-3px)}
+.retstage.gone{opacity:.3}
+.retstage.keep{border-color:var(--green);background:#ECFDF3}
+.frames{display:flex;flex-direction:column;gap:7px;max-width:460px}
+.frm{padding:10px 14px;border-radius:10px;border:2px solid var(--hair);background:#fff;font-family:var(--mono);font-size:13px;font-weight:600;display:flex;justify-content:space-between;align-items:center;transition:all .4s}
+.frm .q{font-size:11px;font-weight:400;color:var(--muted)}
+.frm.hasexc{border-color:var(--coral);background:#FEF2F2;color:var(--coral)}
+.frm.crash{border-color:var(--coral);background:var(--coral);color:#fff}
+.frm.on{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-d)}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>window.addEventListener('DOMContentLoaded',function(){try{document.querySelectorAll('code.language-java,code.language-python,code.language-json,code.language-javascript,code.language-bash,code.language-yaml').forEach(function(b){hljs.highlightElement(b)});}catch(e){}});</script>
+</head><body>
+<div class="top"><a class="home" href="index.html">&larr; All topics</a><span class="crumb">02 · Tool Calling, Context & Memory</span></div>
+<div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-stateless">What the model actually sees</a><a href="#s-tool-calling">Tool calling — the 5-step handshake</a><a href="#s-schema">Writing a good tool definition</a><a href="#s-control">Parallel calls, tool choice and errors</a><a href="#s-structured">Structured output</a><a href="#s-context">The context window — your agent's RAM</a><a href="#s-prompting">Prompt engineering vs context engineering</a><a href="#s-memory">Memory: short-term vs long-term</a><a href="#s-rag">RAG — retrieval-augmented generation</a><a href="#s-check">Check yourself</a></nav><main class="content">
+<h1 class="doc-title">Tool Calling, Context & Memory</h1>
+<div class="hero-viz" id="heroViz"></div>
+<p class="lede">Before MCP, LangChain or LangGraph make sense, you need three mechanics firmly in your head: how a model <strong>calls tools</strong>, how its <strong>context window</strong> fills up, and how an agent <strong>remembers</strong>. Every framework in the charter is a convenience layer over exactly these.</p>
+<p>If something later in the charter feels like magic, the explanation is almost always on this page.</p>
+<hr>
+
+<h2 class="sec" id="s-stateless">What the model actually sees</h2>
+<p>An LLM API is <strong>stateless</strong>. The model does not remember your last request; on every call you send the <em>entire</em> conversation again as a list of messages. Each message has a role:</p>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left">Role</th><th style="text-align:left">Who writes it</th><th style="text-align:left">Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>system</code></td><td>You (developer)</td><td>Standing instructions: role, rules, tone, policies</td></tr>
+    <tr><td><code>user</code></td><td>The person</td><td>The request</td></tr>
+    <tr><td><code>assistant</code></td><td>The model</td><td>Its previous replies — including tool requests</td></tr>
+    <tr><td><code>tool</code></td><td>Your code</td><td>The result of a tool the model asked for</td></tr>
+  </tbody>
+</table></div>
+<div class="code"><span class="code-tag">JSON</span><pre><code class="language-json">[
+  {"role": "system", "content": "You are Acme's support agent. Be concise."},
+  {"role": "user",   "content": "Where is order #1042?"}
+]</code></pre></div>
+<p>The model's reply is a new message you append, then you send the longer list again next turn. Remember this: <strong>"memory" in a chatbot is just you re-sending history.</strong> It will matter again when we talk about context limits.</p>
+<p class="minilabel">Tokens</p>
+<p>Models read <em>tokens</em>, not characters or words — roughly ¾ of an English word each. You pay per token, and the context window is measured in tokens. Code, JSON and non-English text usually cost more tokens per idea than plain English.</p>
+
+<h2 class="sec" id="s-tool-calling">Tool calling — the 5-step handshake</h2>
+<p>Here is the single most important mechanic in agent building. <strong>The model never runs your code.</strong> It only outputs a structured <em>request</em>; your program decides whether and how to run it.</p>
+<div class="frames" style="max-width:620px">
+  <div class="frm"><span>1. You → model</span><span class="q">messages + the list of available tool definitions</span></div>
+  <div class="frm on"><span>2. Model → you</span><span class="q">"please call get_order with {order_id: 1042}"</span></div>
+  <div class="frm"><span>3. Your code</span><span class="q">validates the args and actually runs the function</span></div>
+  <div class="frm"><span>4. You → model</span><span class="q">same messages + a tool message holding the result</span></div>
+  <div class="frm"><span>5. Model → you</span><span class="q">final text answer (or another tool request → loop)</span></div>
+</div>
+<p>What step 2 looks like on the wire (shape varies slightly by provider, the idea is identical):</p>
+<div class="code"><span class="code-tag">Assistant message</span><pre><code class="language-json">{
+  "role": "assistant",
+  "content": "",
+  "tool_calls": [
+    {
+      "id": "call_a1",
+      "name": "get_order",
+      "arguments": {"order_id": "1042"}
+    }
+  ]
+}</code></pre></div>
+<p>And step 4 — you reply with the result, tagged with the same <code>id</code> so the model can match request to answer:</p>
+<div class="code"><span class="code-tag">Tool message</span><pre><code class="language-json">{
+  "role": "tool",
+  "tool_call_id": "call_a1",
+  "content": "{\"status\":\"in_transit\",\"eta\":\"2026-09-28\",\"total\":84.50}"
+}</code></pre></div>
+<blockquote>Why does it work? Models are trained on huge numbers of examples of "given these tool descriptions and this request, emit a well-formed call". It's still next-token prediction — just very well-trained at producing valid JSON for the schemas you gave it.</blockquote>
+
+<h2 class="sec" id="s-schema">Writing a good tool definition</h2>
+<p>A tool definition has three parts: a <strong>name</strong>, a <strong>description</strong> in plain language, and an <strong>input schema</strong> (JSON Schema) describing the arguments. The model reads all three to decide <em>whether</em> and <em>how</em> to call the tool.</p>
+<div class="code"><span class="code-tag">Tool definition</span><pre><code class="language-json">{
+  "name": "issue_refund",
+  "description": "Refund an order. Use only after confirming the order is late or damaged. Amount must not exceed the order total.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "order_id": {"type": "string", "description": "Order number, digits only"},
+      "amount":   {"type": "number", "description": "Refund amount in USD"},
+      "reason":   {"type": "string", "enum": ["late", "damaged", "wrong_item"]}
+    },
+    "required": ["order_id", "amount", "reason"]
+  }
+}</code></pre></div>
+<p class="minilabel">Tool-design rules that pay off</p>
+<ul class="checklist">
+  <li class="ok"><strong>Describe when to use it</strong>, not just what it does ("use only after confirming the order is late").</li>
+  <li class="ok">Use <code>enum</code>s and clear types to shrink the space of wrong answers.</li>
+  <li class="ok">Return <strong>short, useful</strong> results — big JSON blobs eat your context window (more below).</li>
+  <li class="ok">Make error messages <em>instructive</em>: <code>"order not found — ids are 4 digits, did you include '#'?"</code> lets the model self-correct.</li>
+  <li class="no">Don't expose 50 overlapping tools. More tools = more confusion and more tokens. A few well-designed tools beat a big catalogue.</li>
+  <li class="no">Don't make the model juggle opaque IDs it has to guess — return human-readable names alongside IDs.</li>
+</ul>
+
+<h2 class="sec" id="s-control">Parallel calls, tool choice and errors</h2>
+<ul class="checklist">
+  <li class="arw"><strong>Parallel tool calls</strong> — in one turn the model may request several independent calls (e.g. <code>get_order</code> and <code>get_customer</code>). Run them concurrently and return all results.</li>
+  <li class="arw"><strong>Tool choice</strong> — you can usually set it to <code>auto</code> (model decides), <code>required</code>/<code>any</code> (must call some tool), a <em>specific</em> tool, or <code>none</code>. Forcing a tool is how you get guaranteed structured output.</li>
+  <li class="arw"><strong>Errors are observations.</strong> If a tool throws, don't crash the loop — catch it and send the error text back as the tool result. The model will often fix its own arguments and retry.</li>
+</ul>
+<div class="code"><span class="code-tag">Python</span><pre><code class="language-python">def execute(call, tools):
+    try:
+        fn = tools[call["name"]]
+        return str(fn(**call["arguments"]))
+    except KeyError:
+        return f"Error: unknown tool {call['name']!r}"
+    except TypeError as e:                 # bad / missing arguments
+        return f"Error: invalid arguments - {e}"
+    except Exception as e:                 # the tool itself failed
+        return f"Error: {e}"</code></pre></div>
+
+<h2 class="sec" id="s-structured">Structured output</h2>
+<p>Often you don't want a chat reply — you want data your code can parse: <code>{"intent": "refund", "order_id": "1042"}</code>. Three ways, from weakest to strongest:</p>
+<ol>
+  <li><strong>Ask nicely</strong> ("reply in JSON") — works until it doesn't. Avoid in production.</li>
+  <li><strong>Force a tool call</strong> whose schema <em>is</em> your output shape.</li>
+  <li><strong>Provider-native structured output</strong> — the API constrains generation to a JSON Schema.</li>
+</ol>
+<p>In frameworks you usually write a Pydantic class and the library picks the best strategy for you (LangChain does exactly this with <code>response_format</code> — see Topic 04). Always <strong>validate</strong> the result anyway; if it fails, send the validation error back to the model and let it retry once.</p>
+
+<h2 class="sec" id="s-context">The context window — your agent's RAM</h2>
+<p>The context window is the maximum number of tokens the model can consider in a single call: system prompt + all messages + tool definitions + tool results + the reply it is writing. Think of it as <strong>RAM, not a hard disk</strong>: fast, precious and finite.</p>
+<div class="pipe">
+  <span class="stage">System prompt<small>~1–3k</small></span><span class="flowarr">+</span>
+  <span class="stage">Tool definitions<small>~0.2–1k each</small></span><span class="flowarr">+</span>
+  <span class="stage o">History + tool results<small>grows every step</small></span><span class="flowarr">=</span>
+  <span class="stage on">Context window<small>hard limit</small></span>
+</div>
+<p>In agents, the thing that fills the window is almost always <strong>tool results</strong>: a 5,000-row SQL result, a whole web page, a 2,000-line file. And there is a second, subtler problem — <strong>context rot</strong>: as the window fills up, models get measurably worse at recalling and using information buried in the middle, even before the limit is reached. A bigger window helps, but "put everything in" is not a strategy.</p>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left">Technique</th><th style="text-align:left">Idea</th><th style="text-align:left">Acme example</th></tr></thead>
+  <tbody>
+    <tr><td>Truncate tool output</td><td>Cap size, return a preview + "N more rows"</td><td>Return the last 5 orders, not 500</td></tr>
+    <tr><td>Clear old tool results</td><td>Drop stale observations once used</td><td>Delete raw carrier JSON after reading it</td></tr>
+    <tr><td>Summarise / compact</td><td>Replace old turns with a short summary</td><td>"Customer is angry; order late; refund pending approval"</td></tr>
+    <tr><td>Offload to files / notes</td><td>Write facts to disk, re-read when needed</td><td>Save case notes to <code>notes.md</code></td></tr>
+    <tr><td>Just-in-time retrieval</td><td>Keep references (IDs, paths), fetch details on demand</td><td>Hold order IDs; call <code>get_order</code> only if needed</td></tr>
+    <tr><td>Sub-agents</td><td>Do heavy work in a separate window; return a digest</td><td>A "policy lookup" agent returns 3 lines, not the handbook</td></tr>
+  </tbody>
+</table></div>
+<p>Managing this deliberately is called <strong>context engineering</strong>, and in a production agent it is the harness's job — Topic 06 goes deep.</p>
+
+<h2 class="sec" id="s-prompting">Prompt engineering vs context engineering</h2>
+<p><strong>Prompt engineering</strong> is writing good instructions. <strong>Context engineering</strong> is the bigger question: <em>of everything that could be in the window right now, what is the smallest set of high-signal tokens that gets the right behaviour?</em></p>
+<p class="minilabel">A solid system-prompt skeleton</p>
+<div class="code"><span class="code-tag">System prompt</span><pre><code class="language-plaintext"># Role
+You are Acme's customer support agent.
+
+# Goals
+Resolve order problems quickly and politely.
+
+# Rules
+- Never promise a refund before checking the order status.
+- Refunds over $200 require human approval (use request_approval).
+- If you are unsure, ask one clarifying question.
+
+# Tools
+- get_order: look up an order by id. Use first for any order question.
+- issue_refund: refund an order. Only after verifying it is late/damaged.
+
+# Style
+Short, friendly, no jargon. End with the next step for the customer.</code></pre></div>
+<ul class="checklist">
+  <li class="ok">Be specific and direct; explain <em>why</em> a rule exists — models follow reasoned rules better.</li>
+  <li class="ok">Show 2–3 diverse, canonical examples rather than a laundry list of edge cases.</li>
+  <li class="no">Don't hard-code brittle if-else logic in prose — if it must always happen, enforce it in code (the harness), not the prompt.</li>
+</ul>
+
+<h2 class="sec" id="s-memory">Memory: short-term vs long-term</h2>
+<p>Because the API is stateless, "memory" is something <em>you</em> build. There are two kinds:</p>
+<div class="tablewrap"><table>
+  <thead><tr><th style="text-align:left"></th><th style="text-align:left">Short-term (thread) memory</th><th style="text-align:left">Long-term memory</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Scope</strong></td><td>One conversation / one task run</td><td>Across conversations and days</td></tr>
+    <tr><td><strong>What it holds</strong></td><td>The message history and working state</td><td>Facts, preferences, past outcomes, learned procedures</td></tr>
+    <tr><td><strong>How it's stored</strong></td><td>Checkpointed state keyed by a thread/session id</td><td>A database, key-value store or vector store</td></tr>
+    <tr><td><strong>Acme example</strong></td><td>"The order we've been discussing is #1042"</td><td>"This customer prefers email, was refunded twice before"</td></tr>
+    <tr><td><strong>In LangGraph</strong></td><td>Checkpointer + <code>thread_id</code></td><td>The <code>Store</code> interface</td></tr>
+  </tbody>
+</table></div>
+<p>Long-term memory is often split by <em>kind</em>: <strong>semantic</strong> (facts about the user), <strong>episodic</strong> (what happened last time), and <strong>procedural</strong> (instructions the agent has learned — effectively an evolving system prompt). Two hard design questions: <strong>what</strong> deserves to be saved (not every message), and <strong>when</strong> to write it — during the conversation ("hot path") or in a background job afterwards.</p>
+
+<h2 class="sec" id="s-rag">RAG — retrieval-augmented generation</h2>
+<p>The model doesn't know your handbook, tickets or code. <strong>RAG</strong> fixes that by fetching relevant text at question time and putting it in the context.</p>
+<div class="pipe">
+  <span class="stage">Documents<small>policies, FAQs</small></span><span class="flowarr">chunk →</span>
+  <span class="stage">Chunks<small>~200–800 tokens</small></span><span class="flowarr">embed →</span>
+  <span class="stage o">Vector store<small>searchable by meaning</small></span><span class="flowarr">top-k →</span>
+  <span class="stage on">Prompt<small>question + best chunks</small></span>
+</div>
+<p><strong>Embeddings</strong> turn text into number-vectors so that text with similar <em>meaning</em> lands close together; the question is embedded too, and the nearest chunks are retrieved. Classic RAG retrieves once, up front. <strong>Agentic RAG</strong> makes retrieval a <em>tool</em> (<code>search_policies(query)</code>), so the agent decides when to search, rewrites poor queries, and searches again if the first result was thin. Most modern agents work this way — and MCP (next topic) is a standard way to plug such a search tool in.</p>
+
+<h2 class="sec" id="s-check">Check yourself</h2>
+<ul class="checklist">
+  <li class="arw">Why must you re-send the whole conversation on every API call?</li>
+  <li class="arw">Draw the 5-step tool-calling handshake. Who actually executes the function?</li>
+  <li class="arw">Rewrite a vague tool description ("refund tool") into one that tells the model <em>when</em> to use it.</li>
+  <li class="arw">Name three techniques to stop tool results from overflowing the context window.</li>
+  <li class="arw">What's the difference between thread memory and long-term memory? Give an Acme example of each.</li>
+  <li class="arw">Why is agentic RAG usually better than "always retrieve, then answer"?</li>
+</ul>
+
+<p class="pagefoot">Topic 02 · Tool Calling, Context & Memory · <a href="index.html">back to all topics</a></p>
+</main></div>
+
+<script>
+/* ---- shared hero-viz harness (do not edit) ---- */
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.innerHTML=x;return e;}
+function cap(t){var c=el('div','viz-cap');c.appendChild(el('span','pulse'));c.appendChild(document.createTextNode(t));return c;}
+
+/* ---- per-topic animation: define window.topicViz(host) ---- */
+window.topicViz = function (host) {
+  host.innerHTML = '';
+  host.appendChild(cap('Tool calling — the model only asks; your code does the work'));
+
+  var wrap = el('div', 'twocol');
+  var frames = el('div', 'frames');
+  var steps = [
+    ['1 · App → Model', 'messages + tool schemas'],
+    ['2 · Model → App', 'tool_call: get_order'],
+    ['3 · App runs it', 'real function, real API'],
+    ['4 · App → Model', 'tool result appended'],
+    ['5 · Model → App', 'final answer']
+  ];
+  var rows = steps.map(function (d) {
+    var r = el('div', 'frm', '<span>' + d[0] + '</span><span class="q">' + d[1] + '</span>');
+    frames.appendChild(r);
+    return r;
+  });
+  wrap.appendChild(frames);
+
+  var panel = el('div', 'cpanel');
+  panel.style.minHeight = '150px';
+  wrap.appendChild(panel);
+  host.appendChild(wrap);
+
+  var read = el('div', 'readout');
+  host.appendChild(read);
+
+  var panels = [
+    '<span class="mut">// request</span><br>messages: [system, user: "Where is #1042?"]<br>tools: [<span class="ty">get_order</span>, <span class="ty">issue_refund</span>]',
+    '<span class="mut">// response</span><br>{ <span class="kw">"tool_call"</span>: {<br>&nbsp;&nbsp;<span class="kw">"name"</span>: <span class="ty">"get_order"</span>,<br>&nbsp;&nbsp;<span class="kw">"arguments"</span>: {"order_id": "1042"} } }',
+    '<span class="mut">// your code, not the model</span><br>result = get_order(order_id=<span class="ty">"1042"</span>)<br>→ {"status": "in_transit", "eta": "Sep 28"}',
+    '<span class="mut">// request #2</span><br>messages: [..., assistant: tool_call,<br>&nbsp;&nbsp;<span class="kw">tool</span>: {"status": "in_transit", ...}]',
+    '<span class="mut">// response</span><br>"Your order is in transit — the ETA of Sep 28 has passed, so it is running late."'
+  ];
+  var notes = [
+    'The model is shown what tools exist — nothing has run yet',
+    'The model emits a <b>request</b>. It cannot execute anything itself',
+    'Your program validates the arguments, then runs the function',
+    'The result goes back as a <b>tool</b> message so the model can read it',
+    '<span class="hit">No more tool requests → the loop ends with a text answer</span>'
+  ];
+  var k = 0;
+  function frame() {
+    rows.forEach(function (r, i) { r.classList.toggle('on', i === k); });
+    panel.innerHTML = panels[k];
+    read.innerHTML = notes[k];
+    k = (k + 1) % steps.length;
+    setTimeout(frame, k === 0 ? 2600 : 1900);
+  }
+  frame();
+};
+
+
+window.addEventListener('DOMContentLoaded',function(){var h=document.getElementById('heroViz');if(h&&window.topicViz){try{window.topicViz(h);}catch(e){}}});
+</script>
+</body></html>
