@@ -1,5 +1,6 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="article"><meta property="og:title" content="Production, Security & Roadmap — Agentic AI: A Practical Guide"><meta name="description" content="Practical, beginner-friendly notes on building AI agents: MCP, LangChain, LangGraph, harnesses and evals.">
 <title>Production, Security & Roadmap — Agentic AI Notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -118,10 +119,10 @@ tbody tr:nth-child(even){background:#FBFAF8}
 <script>window.addEventListener('DOMContentLoaded',function(){try{document.querySelectorAll('code.language-java,code.language-python,code.language-json,code.language-javascript,code.language-bash,code.language-yaml').forEach(function(b){hljs.highlightElement(b)});}catch(e){}});</script>
 </head><body>
 <div class="top"><a class="home" href="index.html">&larr; All topics</a><span class="crumb">08 · Production, Security & Roadmap</span></div>
-<div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-gap">The demo-to-production gap</a><a href="#s-observability">Observability: traces are your debugger</a><a href="#s-guardrails">Guardrails: defence in depth</a><a href="#s-security">Security: prompt injection and the lethal trifecta</a><a href="#s-cost">Cost and latency</a><a href="#s-reliability">Reliability engineering for agents</a><a href="#s-a2a">Beyond MCP: agent-to-agent protocols</a><a href="#s-blueprint">Blueprint: the Acme Support Agent, end to end</a><a href="#s-plan">A 2-week learning plan</a><a href="#s-etc">The "etc." — other topics to add to the charter</a><a href="#s-glossary">Glossary (A–Z)</a><a href="#s-resources">Where to read next</a><a href="#s-check">Check yourself</a></nav><main class="content">
+<div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-gap">The demo-to-production gap</a><a href="#s-observability">Observability: traces are your debugger</a><a href="#s-guardrails">Guardrails: defence in depth</a><a href="#s-security">Security: prompt injection and the lethal trifecta</a><a href="#s-cost">Cost and latency</a><a href="#s-reliability">Reliability engineering for agents</a><a href="#s-a2a">Beyond MCP: agent-to-agent protocols</a><a href="#s-blueprint">Blueprint: the Acme Support Agent, end to end</a><a href="#s-plan">A 2-week learning plan</a><a href="#s-etc">Where to go next: more topics to explore</a><a href="#s-glossary">Glossary (A–Z)</a><a href="#s-resources">Where to read next</a><a href="#s-check">Check yourself</a></nav><main class="content">
 <h1 class="doc-title">Production, Security & Roadmap</h1>
 <div class="hero-viz" id="heroViz"></div>
-<p class="lede">Getting an agent to work once in a notebook is about 20% of the job. The other 80% is making it <strong>observable, safe, affordable, reliable</strong> — and then learning the whole stack in a sensible order. This last page covers the production concerns that sit around everything you've learned, the "etc." items worth adding to the charter, a blueprint that ties all eight topics together, and a 2-week study plan.</p>
+<p class="lede">Getting an agent to work once in a notebook is about 20% of the job. The other 80% is making it <strong>observable, safe, affordable, reliable</strong> — and then learning the whole stack in a sensible order. This last page covers the production concerns that sit around everything you've learned, other topics worth exploring next, a blueprint that ties all eight topics together, and a 2-week study plan.</p>
 <hr>
 
 <h2 class="sec" id="s-gap">The demo-to-production gap</h2>
@@ -238,7 +239,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
   <div class="frm"><span>Tracing</span><span class="q">every run traced; failures become eval cases</span></div>
   <div class="frm on"><span>Evals &amp; CI</span><span class="q">regression suite with pass^k gate; online monitors; red-team set</span></div>
 </div>
-<p>You can build every layer of this with tools from the charter. The order you <em>learn</em> them matters more than any single tool — which brings us to the plan.</p>
+<p>You can build every layer of this with the tools in this series. The order you <em>learn</em> them matters more than any single tool — which brings us to the plan.</p>
 
 <h2 class="sec" id="s-plan">A 2-week learning plan</h2>
 <p>Each week ends with something you can run. This plan picks up at the part most teams find hardest: orchestration, harness rules and evals. (If you are new to the loop and MCP, skim Topics 01–04 first.)</p>
@@ -261,8 +262,8 @@ tbody tr:nth-child(even){background:#FBFAF8}
   <li class="ok">When a tutorial and the official docs disagree, trust the docs — this field's APIs change quickly.</li>
 </ul>
 
-<h2 class="sec" id="s-etc">The "etc." — other topics to add to the charter</h2>
-<p>The charter list ended with "etc.", and these are the natural next entries. Ask your team which are in scope:</p>
+<h2 class="sec" id="s-etc">Where to go next: more topics to explore</h2>
+<p>This series covers the core stack. These are the natural next topics, depending on what you are building:</p>
 <div class="tablewrap"><table>
   <thead><tr><th style="text-align:left">Topic</th><th style="text-align:left">Why it matters</th></tr></thead>
   <tbody>
@@ -323,7 +324,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
   <li class="arw">Anthropic's engineering posts on context engineering, long-running agent harnesses and evals for agents — the sources behind much of Topics 06–07.</li>
   <li class="arw">OWASP Top 10 for LLM Applications — security checklist for Topic 08.</li>
 </ul>
-<blockquote>The whole charter in one breath: <strong>give a model tools (MCP), orchestrate it (LangChain / LangGraph), wrap it in a safe, context-aware harness, and prove it works with evals.</strong></blockquote>
+<blockquote>The whole series in one breath: <strong>give a model tools (MCP), orchestrate it (LangChain / LangGraph), wrap it in a safe, context-aware harness, and prove it works with evals.</strong></blockquote>
 
 <h2 class="sec" id="s-check">Check yourself</h2>
 <ul class="checklist">
@@ -332,7 +333,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
   <li class="arw">List four levers to cut cost without hurting quality — and how would you verify quality didn't drop?</li>
   <li class="arw">Why do side-effecting tools need idempotency keys in a durable system?</li>
   <li class="arw">Where do MCP and agent-to-agent protocols differ?</li>
-  <li class="arw">Hands-on: finish the Week 2 deliverable and present the before/after eval numbers to your team.</li>
+  <li class="arw">Hands-on: finish the Week 2 deliverable and compare your before/after eval numbers.</li>
 </ul>
 
 <p class="pagefoot">Topic 08 · Production, Security & Roadmap · <a href="index.html">back to all topics</a></p>

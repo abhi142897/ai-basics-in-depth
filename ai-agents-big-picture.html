@@ -1,5 +1,6 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="article"><meta property="og:title" content="AI Agents — The Big Picture — Agentic AI: A Practical Guide"><meta name="description" content="Practical, beginner-friendly notes on building AI agents: MCP, LangChain, LangGraph, harnesses and evals.">
 <title>AI Agents — The Big Picture — Agentic AI Notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -118,10 +119,10 @@ tbody tr:nth-child(even){background:#FBFAF8}
 <script>window.addEventListener('DOMContentLoaded',function(){try{document.querySelectorAll('code.language-java,code.language-python,code.language-json,code.language-javascript,code.language-bash,code.language-yaml').forEach(function(b){hljs.highlightElement(b)});}catch(e){}});</script>
 </head><body>
 <div class="top"><a class="home" href="index.html">&larr; All topics</a><span class="crumb">01 · AI Agents — The Big Picture</span></div>
-<div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-why">Why agents at all?</a><a href="#s-ladder">The autonomy ladder: LLM → chain → workflow → agent</a><a href="#s-loop">The agent loop</a><a href="#s-anatomy">Anatomy of an agent</a><a href="#s-walkthrough">A full walkthrough: the Acme Support Agent</a><a href="#s-patterns">Five workflow patterns worth knowing</a><a href="#s-multi">Multi-agent systems</a><a href="#s-when">When to use an agent — and when not to</a><a href="#s-map">How the charter topics fit together</a><a href="#s-glossary">Mini glossary</a><a href="#s-check">Check yourself</a></nav><main class="content">
+<div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-why">Why agents at all?</a><a href="#s-ladder">The autonomy ladder: LLM → chain → workflow → agent</a><a href="#s-loop">The agent loop</a><a href="#s-anatomy">Anatomy of an agent</a><a href="#s-walkthrough">A full walkthrough: the Acme Support Agent</a><a href="#s-patterns">Five workflow patterns worth knowing</a><a href="#s-multi">Multi-agent systems</a><a href="#s-when">When to use an agent — and when not to</a><a href="#s-map">How the topics fit together</a><a href="#s-glossary">Mini glossary</a><a href="#s-check">Check yourself</a></nav><main class="content">
 <h1 class="doc-title">AI Agents — The Big Picture</h1>
 <div class="hero-viz" id="heroViz"></div>
-<p class="lede">An <strong>AI agent</strong> is a program where a language model decides, step by step, what to do next — which tool to call, what to read, when to stop — until a goal is done. Every other topic in the learning charter (MCP, LangChain, LangGraph, harnesses, evals) exists to make that one idea <em>build-able</em>, <em>reliable</em> and <em>measurable</em>.</p>
+<p class="lede">An <strong>AI agent</strong> is a program where a language model decides, step by step, what to do next — which tool to call, what to read, when to stop — until a goal is done. Every other topic in this series (MCP, LangChain, LangGraph, harnesses, evals) exists to make that one idea <em>build-able</em>, <em>reliable</em> and <em>measurable</em>.</p>
 <p>This first page is the map. Read it before the others: the vocabulary here (loop, tool, state, workflow, harness, eval) is used on every later page.</p>
 <p class="minilabel">Running example for all 8 pages — the "Acme Support Agent"</p>
 <p>A customer writes: <em>"Where is my order #1042? If it's late, please refund me."</em> The agent can look up orders, check shipping, and issue refunds. We will keep coming back to this one agent so every concept has something concrete to attach to.</p>
@@ -293,7 +294,7 @@ ASSISTANT Your order is 8 days late. I've refunded $84.50 (ref R-9913).</code></
   </tbody>
 </table></div>
 
-<h2 class="sec" id="s-map">How the charter topics fit together</h2>
+<h2 class="sec" id="s-map">How the topics fit together</h2>
 <p>Here is the map to keep in your head while you work through the rest. Each topic answers a different question about the same agent:</p>
 <div class="frames" style="max-width:640px">
   <div class="frm"><span>Topic 02 · Tool calling, context, memory</span><span class="q">how the model talks to the outside world</span></div>

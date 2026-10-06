@@ -1,5 +1,6 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="article"><meta property="og:title" content="Evals — Agentic AI: A Practical Guide"><meta name="description" content="Practical, beginner-friendly notes on building AI agents: MCP, LangChain, LangGraph, harnesses and evals.">
 <title>Evals — Agentic AI Notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -122,7 +123,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
 <h1 class="doc-title">Evals</h1>
 <div class="hero-viz" id="heroViz"></div>
 <p class="lede"><strong>Evals</strong> are automated tests for AI behaviour: a set of tasks, a way to run your agent on them, and graders that score what happened. They are how you answer the only question that matters — <em>"is this agent actually good, and did my last change make it better or worse?"</em></p>
-<p>Agents make this harder than ordinary software. They are non-deterministic (the same input can give different results), they take many steps, and "correct" is often a judgement call. That's exactly why evals are the part that separates a demo from a product — and why every other topic in the charter ends up feeding into them.</p>
+<p>Agents make this harder than ordinary software. They are non-deterministic (the same input can give different results), they take many steps, and "correct" is often a judgement call. That's exactly why evals are the part that separates a demo from a product — and why every other topic in this series ends up feeding into them.</p>
 <hr>
 
 <h2 class="sec" id="s-why">Why evals?</h2>
@@ -137,7 +138,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
   <li class="ok">Every change gets a <strong>number</strong> — better, worse or flat — before it ships.</li>
   <li class="ok">Model upgrades become an afternoon of running the suite, not a leap of faith.</li>
   <li class="ok">Bugs found in production become permanent test cases, so they never come back.</li>
-  <li class="ok">The team has a shared, objective definition of "good" (writing the eval often clarifies the spec).</li>
+  <li class="ok">Everyone has a shared, objective definition of "good" (writing the eval often clarifies the spec).</li>
 </ul>
 <blockquote>Evals are to AI what unit + integration tests are to code — except the thing under test is probabilistic, so you measure <em>rates</em> instead of asserting single outcomes.</blockquote>
 
@@ -367,7 +368,7 @@ def evaluate(agent, cases, k=5):
 <ul class="checklist">
   <li class="arw">Define task, trial, grader and transcript, and explain how an eval harness differs from an agent harness.</li>
   <li class="arw">Why is "grade the outcome, not the path" good advice? Give an Acme example.</li>
-  <li class="arw">A task passes 4 of 5 trials. Compute pass@5 and pass^5 intuitively and explain which one a customer-facing team should watch.</li>
+  <li class="arw">A task passes 4 of 5 trials. Compute pass@5 and pass^5 intuitively and explain which one a customer-facing product should watch.</li>
   <li class="arw">List three practices that make an LLM judge trustworthy.</li>
   <li class="arw">Why must a good dataset contain negative cases?</li>
   <li class="arw">Hands-on: extend the mini harness with a "duplicate request → exactly one refund" case and a cost/steps metric, then wire it into a CI check.</li>

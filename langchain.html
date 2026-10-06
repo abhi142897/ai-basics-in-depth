@@ -1,5 +1,6 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="article"><meta property="og:title" content="LangChain — Agentic AI: A Practical Guide"><meta name="description" content="Practical, beginner-friendly notes on building AI agents: MCP, LangChain, LangGraph, harnesses and evals.">
 <title>LangChain — Agentic AI Notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -301,7 +302,7 @@ def log_tool_calls(request, handler):
 agent = create_agent(model="anthropic:claude-sonnet-5-5",
                      tools=[get_order, issue_refund],
                      middleware=[log_tool_calls])</code></pre></div>
-<p>Why this matters for the charter: middleware is a lightweight, built-in <strong>harness</strong> (Topic 06). Context trimming, approvals and guardrails — the things that make agents dependable — plug in here.</p>
+<p>Why this matters: middleware is a lightweight, built-in <strong>harness</strong> (Topic 06). Context trimming, approvals and guardrails — the things that make agents dependable — plug in here.</p>
 
 <h2 class="sec" id="s-memory">Memory: threads and checkpointers</h2>
 <p>By default each <code>invoke</code> starts fresh. To make the agent remember a conversation, give it a <strong>checkpointer</strong> and call it with a <strong>thread id</strong>:</p>

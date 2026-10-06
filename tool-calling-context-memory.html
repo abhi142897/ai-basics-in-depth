@@ -1,5 +1,6 @@
 <!doctype html><html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:type" content="article"><meta property="og:title" content="Tool Calling, Context & Memory — Agentic AI: A Practical Guide"><meta name="description" content="Practical, beginner-friendly notes on building AI agents: MCP, LangChain, LangGraph, harnesses and evals.">
 <title>Tool Calling, Context & Memory — Agentic AI Notes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
@@ -121,8 +122,8 @@ tbody tr:nth-child(even){background:#FBFAF8}
 <div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-stateless">What the model actually sees</a><a href="#s-tool-calling">Tool calling — the 5-step handshake</a><a href="#s-schema">Writing a good tool definition</a><a href="#s-control">Parallel calls, tool choice and errors</a><a href="#s-structured">Structured output</a><a href="#s-context">The context window — your agent's RAM</a><a href="#s-prompting">Prompt engineering vs context engineering</a><a href="#s-memory">Memory: short-term vs long-term</a><a href="#s-rag">RAG — retrieval-augmented generation</a><a href="#s-check">Check yourself</a></nav><main class="content">
 <h1 class="doc-title">Tool Calling, Context & Memory</h1>
 <div class="hero-viz" id="heroViz"></div>
-<p class="lede">Before MCP, LangChain or LangGraph make sense, you need three mechanics firmly in your head: how a model <strong>calls tools</strong>, how its <strong>context window</strong> fills up, and how an agent <strong>remembers</strong>. Every framework in the charter is a convenience layer over exactly these.</p>
-<p>If something later in the charter feels like magic, the explanation is almost always on this page.</p>
+<p class="lede">Before MCP, LangChain or LangGraph make sense, you need three mechanics firmly in your head: how a model <strong>calls tools</strong>, how its <strong>context window</strong> fills up, and how an agent <strong>remembers</strong>. Every agent framework is a convenience layer over exactly these.</p>
+<p>If something later in the series feels like magic, the explanation is almost always on this page.</p>
 <hr>
 
 <h2 class="sec" id="s-stateless">What the model actually sees</h2>
