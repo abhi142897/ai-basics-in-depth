@@ -143,7 +143,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
 <blockquote>Evals are to AI what unit + integration tests are to code — except the thing under test is probabilistic, so you measure <em>rates</em> instead of asserting single outcomes.</blockquote>
 
 <h2 class="sec" id="s-vocab">The vocabulary</h2>
-<p>A handful of terms recur across every eval tool and article. Learn these and you can read any of them:</p>
+<p>A handful of terms recur across every eval tool and article. The definitions below follow Anthropic's <em>Demystifying evals for AI agents</em> (Jan 2026); learn them and you can read any of the others:</p>
 <div class="tablewrap"><table>
   <thead><tr><th style="text-align:left">Term</th><th style="text-align:left">Meaning</th><th style="text-align:left">Acme example</th></tr></thead>
   <tbody>
@@ -193,7 +193,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
   <li class="ok"><strong>Good:</strong> after the run, the refunds table has exactly one row for order 1042, amount ≤ $84.50.</li>
   <li class="no"><strong>Brittle:</strong> the agent must call <code>get_order</code>, then <code>track_shipment</code>, then <code>issue_refund</code>, in that order.</li>
 </ul>
-<p>Check <em>trajectory</em> only for things that genuinely matter — e.g. "never calls <code>issue_refund</code> before verifying lateness", "stays under 10 tool calls", "never touches another customer's data". Think of them as <em>constraints</em>, not a script.</p>
+<p>For tasks with several components (say: found the right order <em>and</em> refunded the right amount <em>and</em> wrote a clear reply), give <strong>partial credit</strong> per component rather than a single all-or-nothing score — it shows you which step is weak. Check <em>trajectory</em> only for things that genuinely matter — e.g. "never calls <code>issue_refund</code> before verifying lateness", "stays under 10 tool calls", "never touches another customer's data". Think of them as <em>constraints</em>, not a script.</p>
 
 <h2 class="sec" id="s-dataset">Building the dataset</h2>
 <p>A great eval suite is built from reality, not imagination. A practical recipe:</p>
@@ -315,7 +315,7 @@ def evaluate(agent, cases, k=5):
 
 # for each case: print(case_id, report[case_id])
 # CI rule example: fail the build if any regression case has pass_pow_k == False</code></pre></div>
-<p>Even this tiny harness already catches the classic bugs: an agent that over-refunds fails <code>on-time-no-refund</code>; one that obeys injected text fails <code>injection</code>; a flaky one shows up as <code>pass_rate</code> below 1.0.</p>
+<p>We ran this exact code against stand-in agents: a reliable one scored 100% on the negative case, a flaky 80%-reliable agent showed <code>pass_rate</code> 0.8 with <code>pass_pow_k</code> false, and an agent that obeyed the injected text scored 0 on <code>injection</code>. Even this tiny harness already catches the classic bugs: an agent that over-refunds fails <code>on-time-no-refund</code>; one that obeys injected text fails <code>injection</code>; a flaky one shows up as <code>pass_rate</code> below 1.0.</p>
 
 <h2 class="sec" id="s-tools">Tooling landscape</h2>
 <p>When the hand-rolled script outgrows you, platforms add trace storage, dataset management, UI for reviewing runs, LLM-judge templates, comparison views and CI integration. Examples (check current docs; this space moves quickly):</p>
@@ -361,7 +361,7 @@ def evaluate(agent, cases, k=5):
   <li class="no">Shared state between trials, so one run's side effects pollute the next.</li>
   <li class="no">Editing tasks until the score goes up (Goodhart's law), or overfitting the prompt to the eval set — keep a held-out set.</li>
   <li class="no">Never reading transcripts, so grader bugs and real failures look identical.</li>
-  <li class="no">Treating evals as a one-off launch gate rather than a living asset. Pair them with production monitoring, A/B tests and periodic human review — no single method catches everything.</li>
+  <li class="no">Treating evals as a one-off launch gate rather than a living asset. Think of the <strong>Swiss-cheese model</strong> from safety engineering: every layer (automated evals, production monitoring, A/B tests, transcript reading, human review) has holes, but the holes rarely line up — so use several layers, not one.</li>
 </ul>
 
 <h2 class="sec" id="s-check">Check yourself</h2>

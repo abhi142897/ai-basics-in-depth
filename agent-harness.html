@@ -225,7 +225,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
 </ul>
 
 <h2 class="sec" id="s-context">Context engineering — the harness's hardest job</h2>
-<p>Topic 02 introduced the context window and context rot. A harness is where you actually <em>manage</em> it. The principle: find the <strong>smallest set of high-signal tokens</strong> that lets the model do the next step well.</p>
+<p>Topic 02 introduced the context window and context rot. A harness is where you actually <em>manage</em> it. The principle (popularised in Anthropic's <em>Effective context engineering for AI agents</em>): find the <strong>smallest set of high-signal tokens</strong> that lets the model do the next step well.</p>
 <div class="tablewrap"><table>
   <thead><tr><th style="text-align:left">Technique</th><th style="text-align:left">How it works</th><th style="text-align:left">Trade-off</th></tr></thead>
   <tbody>
@@ -270,14 +270,14 @@ tbody tr:nth-child(even){background:#FBFAF8}
 </ul>
 
 <h2 class="sec" id="s-longrunning">Long-running agents: surviving many context windows</h2>
-<p>Some jobs (build a feature, migrate a codebase, produce a research report) take hours — longer than any single context window. Engineering teams have converged on a pattern for this:</p>
-<div class="frames" style="max-width:640px">
-  <div class="frm"><span>1. Initializer session</span><span class="q">sets up the environment, writes a feature list and a progress file</span></div>
-  <div class="frm on"><span>2. Work session</span><span class="q">fresh context: reads progress file + git log, does <em>one</em> item</span></div>
-  <div class="frm"><span>3. Leave a clean state</span><span class="q">tests pass, commit, update the progress file</span></div>
-  <div class="frm"><span>4. Next session</span><span class="q">starts fresh again — memory lives in files and git, not the chat</span></div>
+<p>Some jobs (build a whole app, migrate a codebase, produce a big research report) take hours — far longer than any single context window. The core problem, as Anthropic's engineering team put it in <em>Effective harnesses for long-running agents</em> (Nov 2025): the agent must work in discrete sessions, and <strong>each new session starts with no memory of the last</strong>. Their solution, built on the Claude Agent SDK, is a two-part harness:</p>
+<div class="frames" style="max-width:660px">
+  <div class="frm"><span>1. Initializer agent (first session only)</span><span class="q">sets up the environment: an <code>init.sh</code>, a progress log file, a feature list, and an initial git commit</span></div>
+  <div class="frm on"><span>2. Coding agent (every later session)</span><span class="q">starts fresh: reads the progress file + git log, picks <em>one</em> feature, implements it</span></div>
+  <div class="frm"><span>3. Verify, then record</span><span class="q">test the feature end-to-end, commit with a clear message, update the progress file</span></div>
+  <div class="frm"><span>4. Next session</span><span class="q">gets up to speed from files and git history — not from chat memory</span></div>
 </div>
-<p>The insight: <strong>the agent's memory is the filesystem</strong>, not the context window. Each session is like a new engineer arriving for a shift who reads the handover notes. Without this discipline, agents tend to try to do everything at once, run out of context mid-task, or declare victory early.</p>
+<p>The insight: <strong>the agent's memory is the filesystem and version control</strong>, not the context window. Each session is like a new engineer arriving for a shift who reads the handover notes. Without this discipline, agents tend to try to do everything at once, run out of context mid-feature, leave the code half-broken, or declare the whole job done too early. The same pattern generalises beyond coding: any long task benefits from an explicit checklist of "done" criteria, a progress log, and one verified unit of work per session.</p>
 
 <h2 class="sec" id="s-durability">Reliability: limits, retries, checkpoints</h2>
 <ul class="checklist">

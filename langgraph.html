@@ -123,7 +123,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
 <h1 class="doc-title">LangGraph</h1>
 <div class="hero-viz" id="heroViz"></div>
 <p class="lede"><strong>LangGraph</strong> is a low-level orchestration framework and runtime for stateful agents. You describe your agent as a <strong>graph</strong> — shared <em>state</em>, <em>nodes</em> that do work, and <em>edges</em> that decide what runs next — and LangGraph gives you the hard production features for free: saved progress, pausing for a human, streaming, retries and resuming after a crash.</p>
-<p>If <code>create_agent</code> (Topic 04) is the automatic gearbox, LangGraph is the manual one with the whole engine exposed. In fact <code>create_agent</code> <em>is</em> a LangGraph graph under the hood, so everything on this page also explains how your LangChain agents actually run.</p>
+<p>If <code>create_agent</code> (Topic 04) is the automatic gearbox, LangGraph is the manual one with the whole engine exposed. In fact <code>create_agent</code> <em>is</em> a LangGraph graph under the hood, so everything on this page also explains how your LangChain agents actually run. The code samples were run against <code>langgraph</code> 1.2 (state and reducers, conditional edges, checkpoints, <code>interrupt</code> + resume, <code>Send</code>, <code>Command</code>, the Store).</p>
 <hr>
 
 <h2 class="sec" id="s-why">Why graphs?</h2>
@@ -401,12 +401,13 @@ window.topicViz = function (host) {
   host.appendChild(cap('LangGraph — nodes run, state is checkpointed, a human can pause the graph'));
 
   var pipe = el('div', 'pipe');
+  pipe.style.gap = '5px';
   var defs = [['START', ''], ['agent', 'LLM decides'], ['tools', 'run get_order'], ['agent', 'LLM decides'], ['approve', 'interrupt()'], ['tools', 'issue_refund'], ['END', '']];
   var stages = defs.map(function (d, i) {
     var s = el('span', 'stage', '<span>' + d[0] + '</span>' + (d[1] ? '<small>' + d[1] + '</small>' : ''));
-    s.style.minWidth = '70px';
+    s.style.minWidth = '56px'; s.style.padding = '10px 7px';
     pipe.appendChild(s);
-    if (i < defs.length - 1) pipe.appendChild(el('span', 'flowarr', '→'));
+    if (i < defs.length - 1) pipe.appendChild(el('span', 'flowarr', '›'));
     return s;
   });
   host.appendChild(pipe);

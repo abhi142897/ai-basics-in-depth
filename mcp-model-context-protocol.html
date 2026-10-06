@@ -119,12 +119,12 @@ tbody tr:nth-child(even){background:#FBFAF8}
 <script>window.addEventListener('DOMContentLoaded',function(){try{document.querySelectorAll('code.language-java,code.language-python,code.language-json,code.language-javascript,code.language-bash,code.language-yaml').forEach(function(b){hljs.highlightElement(b)});}catch(e){}});</script>
 </head><body>
 <div class="top"><a class="home" href="index.html">&larr; All topics</a><span class="crumb">03 · MCP — Model Context Protocol</span></div>
-<div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-problem">The problem MCP solves</a><a href="#s-architecture">Architecture: host, client, server</a><a href="#s-primitives">The three primitives: tools, resources, prompts</a><a href="#s-jsonrpc">The wire format: JSON-RPC 2.0</a><a href="#s-lifecycle">Then vs now: from stateful to stateless</a><a href="#s-transports">Transports: stdio vs Streamable HTTP</a><a href="#s-server">Build a server in ~25 lines</a><a href="#s-client">How a host uses MCP servers</a><a href="#s-auth">Authorization for remote servers</a><a href="#s-security">Security: MCP expands your attack surface</a><a href="#s-design">Designing good MCP servers</a><a href="#s-compare">MCP vs the alternatives</a><a href="#s-check">Check yourself</a></nav><main class="content">
+<div class="shell"><nav class="toc"><h4>On this page</h4><a href="#s-problem">The problem MCP solves</a><a href="#s-architecture">Architecture: host, client, server</a><a href="#s-primitives">The three primitives: tools, resources, prompts</a><a href="#s-jsonrpc">The wire format: JSON-RPC 2.0</a><a href="#s-lifecycle">Then vs now: from stateful to stateless</a><a href="#s-transports">Transports: stdio vs Streamable HTTP</a><a href="#s-server">Build a server in ~25 lines</a><a href="#s-client">How a host uses MCP servers</a><a href="#s-auth">Authorization for remote servers</a><a href="#s-security">Security: MCP expands your attack surface</a><a href="#s-design">Designing good MCP servers</a><a href="#s-extensions">Extensions: tasks and MCP Apps</a><a href="#s-compare">MCP vs the alternatives</a><a href="#s-check">Check yourself</a></nav><main class="content">
 <h1 class="doc-title">MCP — Model Context Protocol</h1>
 <div class="hero-viz" id="heroViz"></div>
 <p class="lede">The <strong>Model Context Protocol (MCP)</strong> is an open standard for connecting AI applications to tools and data. Think of it as <strong>USB-C for AI</strong>: instead of writing a custom connector for every (app × tool) pair, a tool builder writes one MCP server and <em>any</em> MCP-capable app can use it.</p>
 <p>Topic 02 showed how a model calls a tool you defined <em>in your own code</em>. MCP answers the next question: how do we let an agent use tools that live in <em>someone else's</em> system — GitHub, Slack, a database, a company wiki — without rewriting glue for each one?</p>
-<blockquote>MCP moves fast. This page reflects the specification revision <code>2026-07-28</code> (the current one at the time of writing). Always check <code>modelcontextprotocol.io</code> for the latest, and note that many tutorials online still describe the older stateful protocol.</blockquote>
+<blockquote>MCP moves fast. This page follows the official changelog for specification revision <code>2026-07-28</code> (current as of October 2026), and the code was run against the Python SDK (<code>mcp</code> 1.30 and 2.3). Always check <code>modelcontextprotocol.io</code> for the latest — many tutorials online still describe the older stateful protocol.</blockquote>
 <hr>
 
 <h2 class="sec" id="s-problem">The problem MCP solves</h2>
@@ -168,7 +168,7 @@ tbody tr:nth-child(even){background:#FBFAF8}
 </table></div>
 <p>Tools get 90% of the attention because they are what let agents <em>act</em>. But resources are the right home for "documents the app should be able to show" and prompts for "a canned workflow the user can trigger".</p>
 <p class="minilabel">What about server-to-client features?</p>
-<p>Earlier revisions let servers ask the client for help: <strong>sampling</strong> (ask the host's LLM to generate text), <strong>elicitation</strong> (ask the user a question) and <strong>roots</strong> (learn which folders it may touch). The 2026-07-28 revision reworks this — server-initiated requests are replaced by a <em>multi round-trip</em> pattern where the server returns "I need more input" and the client retries with the answer — and formally deprecates roots, sampling and the protocol-level logging feature. If you read older material that leans on these, treat it as legacy.</p>
+<p>Earlier revisions let servers ask the client for help: <strong>sampling</strong> (ask the host's LLM to generate text), <strong>elicitation</strong> (ask the user a question) and <strong>roots</strong> (learn which folders it may touch). The 2026-07-28 revision replaces server-initiated requests with a <strong>Multi Round-Trip Requests (MRTR)</strong> pattern: the server returns an interim result (<code>resultType: "input_required"</code>) listing what it needs, and the client retries the original request with the answers attached. It also <strong>deprecates Roots, Sampling and Logging</strong>. They still work and will keep working for at least twelve months, but new implementations should not adopt them (suggested alternatives: pass paths via tool parameters instead of Roots, call your LLM provider directly instead of Sampling, log to <code>stderr</code> or use OpenTelemetry instead of Logging). If older material leans on these, treat it as legacy.</p>
 
 <h2 class="sec" id="s-jsonrpc">The wire format: JSON-RPC 2.0</h2>
 <p>MCP messages are <strong>JSON-RPC 2.0</strong>: a request has an <code>id</code>, a <code>method</code> and <code>params</code>; the response echoes the <code>id</code> with a <code>result</code> or an <code>error</code>. A <em>notification</em> has no <code>id</code> and expects no reply.</p>
@@ -212,7 +212,10 @@ tbody tr:nth-child(even){background:#FBFAF8}
   "params": {
     "name": "get_order",
     "arguments": {"order_id": "1042"},
-    "_meta": {"io.modelcontextprotocol/protocolVersion": "2026-07-28"}
+    "_meta": {
+      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+      "io.modelcontextprotocol/clientCapabilities": {}
+    }
   }
 }</code></pre></div>
 <div class="code"><span class="code-tag">Response</span><pre><code class="language-json">{
@@ -226,18 +229,18 @@ tbody tr:nth-child(even){background:#FBFAF8}
     "isError": false
   }
 }</code></pre></div>
-<p>Compare with Topic 02: the <code>tool_call</code> the model emitted and this <code>tools/call</code> are the <em>same idea</em> — the host just translates one into the other. <code>ttlMs</code> and <code>cacheScope</code> are caching hints so clients don't re-list tools constantly (<code>private</code> = may differ per user, e.g. when the tool list depends on who is logged in). <code>isError: true</code> reports a <em>tool</em> failure the model can read and react to, distinct from a protocol-level JSON-RPC error.</p>
+<p>Compare with Topic 02: the <code>tool_call</code> the model emitted and this <code>tools/call</code> are the <em>same idea</em> — the host just translates one into the other. <code>ttlMs</code> is a freshness hint in milliseconds, so clients don't re-list tools constantly. <code>cacheScope</code> is <code>"public"</code> (shared caches and intermediaries may reuse the response) or <code>"private"</code> (only for this user — use it when the list depends on who is logged in). <code>isError: true</code> reports a <em>tool</em> failure the model can read and react to, distinct from a protocol-level JSON-RPC error.</p>
 
 <h2 class="sec" id="s-lifecycle">Then vs now: from stateful to stateless</h2>
 <p>This is the biggest change since MCP launched, and the part most tutorials get wrong. Know both eras — you will meet servers speaking either.</p>
 <div class="tablewrap"><table>
-  <thead><tr><th style="text-align:left">Revision</th><th style="text-align:left">Headline change</th></tr></thead>
+  <thead><tr><th style="text-align:left">Revision</th><th style="text-align:left">Headline changes (from the official changelogs)</th></tr></thead>
   <tbody>
-    <tr><td><code>2024-11-05</code></td><td>First release. Local stdio plus HTTP + SSE for remote.</td></tr>
-    <tr><td><code>2025-03-26</code></td><td>Streamable HTTP replaces HTTP + SSE; OAuth 2.1-based authorization for remote servers.</td></tr>
-    <tr><td><code>2025-06-18</code></td><td>Structured tool output, elicitation, tighter authorization model.</td></tr>
-    <tr><td><code>2025-11-25</code></td><td>Further refinements incl. experimental long-running "tasks".</td></tr>
-    <tr><td><code>2026-07-28</code></td><td><strong>Stateless protocol</strong>: no <code>initialize</code> handshake, no protocol-level sessions, new <code>server/discover</code>.</td></tr>
+    <tr><td><code>2024-11-05</code></td><td>First release. Local stdio plus HTTP + SSE for remote servers.</td></tr>
+    <tr><td><code>2025-03-26</code></td><td>OAuth 2.1-based authorization framework; Streamable HTTP replaces HTTP + SSE; tool annotations (read-only / destructive hints); JSON-RPC batching added.</td></tr>
+    <tr><td><code>2025-06-18</code></td><td>Structured tool output; elicitation; servers classified as OAuth resource servers; Resource Indicators (RFC 8707) required of clients; resource links in tool results; JSON-RPC batching removed; <code>MCP-Protocol-Version</code> header on HTTP requests.</td></tr>
+    <tr><td><code>2025-11-25</code></td><td>Experimental long-running <em>tasks</em> and URL-mode elicitation, among other refinements.</td></tr>
+    <tr><td><code>2026-07-28</code></td><td><strong>Stateless protocol</strong>: no <code>initialize</code> handshake, no protocol-level sessions, mandatory <code>server/discover</code>, multi round-trip requests, cacheable lists, tasks moved to an extension, Roots / Sampling / Logging deprecated.</td></tr>
   </tbody>
 </table></div>
 <h3 class="sub">The old way (≤ 2025-11-25): handshake + session</h3>
@@ -253,7 +256,8 @@ tbody tr:nth-child(even){background:#FBFAF8}
   <li class="ok">No <code>initialize</code> / <code>initialized</code> handshake and no protocol-level sessions on Streamable HTTP.</li>
   <li class="ok">Every request carries its own protocol version and client capabilities in <code>_meta</code>; the server accepts or rejects each request independently (an unsupported version gets an <code>UnsupportedProtocolVersion</code> error).</li>
   <li class="ok">A mandatory <code>server/discover</code> method tells a client the server's supported versions, capabilities and identity up front (it also serves as the compatibility probe on stdio).</li>
-  <li class="ok">List and read results carry caching hints (<code>ttlMs</code>, <code>cacheScope</code>); a single long-lived <code>subscriptions/listen</code> stream replaces the old subscribe/GET-stream machinery.</li>
+  <li class="ok">List and read results carry caching hints (<code>ttlMs</code>, <code>cacheScope</code>); servers should return tools in a deterministic order so clients can cache and LLM prompt caches keep hitting. A single long-lived <code>subscriptions/listen</code> stream replaces the old subscribe/GET-stream machinery, and SSE stream resumption (<code>Last-Event-ID</code>) is gone — a broken stream means the client re-issues the request.</li>
+  <li class="ok">Every result carries a <code>resultType</code> (<code>"complete"</code> or <code>"input_required"</code>).</li>
   <li class="ok">Selected fields are mirrored into HTTP headers (<code>MCP-Protocol-Version</code>, <code>Mcp-Method</code>, <code>Mcp-Name</code>) so gateways and load balancers can route and observe traffic without parsing bodies.</li>
 </ul>
 <blockquote>In simple words: old MCP was a phone call (dial, say hello, then talk). New MCP is more like HTTP requests — each message carries everything the receiver needs, so any server instance can answer it.</blockquote>
@@ -287,10 +291,15 @@ tbody tr:nth-child(even){background:#FBFAF8}
 <p>The exact file name and keys differ between hosts (Claude Desktop, IDEs, etc.) — check the host's docs — but the idea is always "name → how to start it, or where to reach it".</p>
 
 <h2 class="sec" id="s-server">Build a server in ~25 lines</h2>
-<p>The official Python SDK has a high-level helper, <code>FastMCP</code>, that turns decorated functions into MCP tools — the type hints become the JSON Schema and the docstring becomes the description (exactly the tool-design advice from Topic 02).</p>
-<div class="code"><span class="code-tag">orders_server.py</span><pre><code class="language-python">from mcp.server.fastmcp import FastMCP
+<p>The official Python SDK turns decorated functions into MCP tools — the type hints become the JSON Schema and the docstring becomes the description (exactly the tool-design advice from Topic 02). The SDK recently moved to a new major version aligned with the 2026 spec, and <strong>the class was renamed</strong>, so you will meet both forms in the wild:</p>
+<ul class="checklist">
+  <li class="arw"><strong>SDK 2.x</strong> (<code>pip install "mcp&gt;=2"</code>) — <code>from mcp.server.mcpserver import MCPServer</code>. Use this for new work.</li>
+  <li class="arw"><strong>SDK 1.x</strong> (<code>pip install "mcp&lt;2"</code>) — <code>from mcp.server.fastmcp import FastMCP</code>. Most existing tutorials and servers use this.</li>
+</ul>
+<p>The rest of the file is identical. Here is the 2.x version:</p>
+<div class="code"><span class="code-tag">orders_server.py · SDK 2.x</span><pre><code class="language-python">from mcp.server.mcpserver import MCPServer
 
-mcp = FastMCP("acme-orders")
+mcp = MCPServer("acme-orders")
 
 ORDERS = {"1042": {"status": "in_transit", "eta": "2026-09-28", "total": 84.50}}
 
@@ -302,7 +311,6 @@ def get_order(order_id: str) -&gt; dict:
 @mcp.tool()
 def issue_refund(order_id: str, amount: float, reason: str) -&gt; str:
     """Refund an order. Only after confirming it is late or damaged."""
-    # ... call the real refund API here ...
     return f"Refunded ${amount:.2f} for order {order_id} ({reason})"
 
 @mcp.resource("policy://refunds")
@@ -316,8 +324,9 @@ def summarise_ticket(ticket_text: str) -&gt; str:
     return f"Summarise this ticket in 3 bullets and flag urgency:\n\n{ticket_text}"
 
 if __name__ == "__main__":
-    mcp.run(transport="stdio")      # or "streamable-http" for a remote server</code></pre></div>
-<p>Three things to notice: one function = one tool; types and docstrings do the schema work for you; and swapping <code>stdio</code> for <code>streamable-http</code> is how the same server goes from "on my laptop" to "shared service". SDK packages have been moving to new major versions alongside the 2026 spec, so import paths can differ slightly — follow the current SDK README.</p>
+    mcp.run(transport="stdio")</code></pre></div>
+<p>For SDK 1.x, change only the import and the constructor: <code>from mcp.server.fastmcp import FastMCP</code> and <code>mcp = FastMCP("acme-orders")</code>. Both versions were run and tested for this page (listing tools, calling a tool, reading the resource and the prompt).</p>
+<p>Three things to notice: one function = one tool; types and docstrings do the schema work for you; and swapping <code>stdio</code> for <code>streamable-http</code> is how the same server goes from "on my laptop" to "shared service".</p>
 <p class="minilabel">Test it before wiring it to a model</p>
 <div class="code"><span class="code-tag">Terminal</span><pre><code class="language-bash">npx @modelcontextprotocol/inspector python orders_server.py</code></pre></div>
 <p>The <strong>MCP Inspector</strong> is a small web UI that connects to your server, lists its tools and lets you call them by hand. Debug here first — if a tool misbehaves in the Inspector, no amount of prompting will fix it.</p>
@@ -347,9 +356,11 @@ result = await agent.ainvoke(
     {"messages": [{"role": "user", "content": "Where is order 1042?"}]}
 )</code></pre></div>
 <p>The agent has no idea these tools came from MCP — which is exactly the point of a standard.</p>
+<p class="minilabel">Mixing SDK versions</p>
+<p>At the time of writing, <code>langchain-mcp-adapters</code> installs the 1.x line of the <code>mcp</code> package for the <em>client</em> side. That is fine: the server runs as a separate process, and we tested the adapter client talking to a server built with SDK 2.x over stdio without problems. Just keep the server and client in separate environments (or pin versions) so pip doesn't fight over <code>mcp</code>.</p>
 
 <h2 class="sec" id="s-auth">Authorization for remote servers</h2>
-<p>A local stdio server runs as <em>you</em>, so it needs no login. A remote Streamable-HTTP server must know <em>who is calling and what they may do</em>. MCP builds on <strong>OAuth 2.1</strong>:</p>
+<p>A local stdio server runs as <em>you</em>, so it needs no login. A remote Streamable-HTTP server must know <em>who is calling and what they may do</em>. MCP builds on <strong>OAuth 2.1</strong> (introduced in 2025-03-26), and since 2025-06-18 an MCP server is treated as an OAuth <em>resource server</em> that points clients to its authorization server, with clients required to use Resource Indicators (RFC 8707) so a token can't be replayed against the wrong server:</p>
 <ol>
   <li>Client calls the server without a token and gets <code>401</code> plus a pointer to the server's authorization metadata.</li>
   <li>Client discovers the authorization server and sends the user through a standard OAuth sign-in (with PKCE).</li>
@@ -361,6 +372,7 @@ result = await agent.ainvoke(
   <li class="ok">Validate that the token was issued <em>for your server</em>.</li>
   <li class="no">Never forward the user's token on to some other downstream API ("token passthrough") — that is a confused-deputy vulnerability.</li>
 </ul>
+<p>One recent change worth knowing: the 2026-07-28 revision deprecates OAuth Dynamic Client Registration in favour of <strong>Client ID Metadata Documents</strong> (DCR still works for backward compatibility), and requires clients to bind stored credentials to the authorization server that issued them.</p>
 
 <h2 class="sec" id="s-security">Security: MCP expands your attack surface</h2>
 <p>Every MCP server you connect is code and text your agent will <strong>trust and act on</strong>. Treat it like installing software, not like adding a bookmark.</p>
@@ -388,6 +400,14 @@ result = await agent.ainvoke(
   <li class="ok">Mark <strong>destructive</strong> tools clearly and require confirmation in the host.</li>
   <li class="no">Don't auto-wrap an entire OpenAPI spec as tools and call it done.</li>
 </ul>
+
+<h2 class="sec" id="s-extensions">Extensions: tasks and MCP Apps</h2>
+<p>The 2026-07-28 revision adds a formal <strong>extensions</strong> mechanism, so optional capabilities can evolve without bloating the core protocol. Two worth knowing:</p>
+<ul class="checklist">
+  <li class="arw"><strong>Tasks</strong> (<code>io.modelcontextprotocol/tasks</code>) — for long-running work. Instead of holding a request open, the server returns a task handle and the client polls with <code>tasks/get</code>. This was experimental inside the core protocol in 2025-11-25 and is now an official extension.</li>
+  <li class="arw"><strong>MCP Apps</strong> — lets a server return interactive UI to render in the host, not only text and data.</li>
+</ul>
+<p>Hosts and servers declare the extensions they support in their capabilities, so everything degrades gracefully when one side doesn't know an extension. The spec also documents passing OpenTelemetry trace context (<code>traceparent</code>, <code>tracestate</code>) in <code>_meta</code>, so a trace can follow a request from agent through MCP server to the backend — handy for Topic 08.</p>
 
 <h2 class="sec" id="s-compare">MCP vs the alternatives</h2>
 <div class="tablewrap"><table>
